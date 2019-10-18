@@ -1,0 +1,174 @@
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_asc_disabled:after,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_desc_disabled:after,
+table.dataTable thead .sorting_desc_disabled:before {
+  bottom: .5em;
+}
+
+/* Table mods */
+.containers_container{
+  width:75%;
+  margin:5px auto;
+  padding:5px;
+  margin:5px auto;
+  border-radius:10px;
+  border:1px solid grey;
+}
+.tablecontainer{
+  text-align:center;
+  width: 48%;
+  margin:2px;
+  display: inline-block;
+  overflow-x:auto;
+}
+.selectedcheckscontainer{
+  width:48%;
+  margin:2px;
+  text-align:center;
+  display: inline-block;
+  vertical-align: top;
+}
+.selectedcheck{
+  border-radius:8px;
+  background-color:#540000;
+  color:white;
+  font-size:1em;
+  margin:5px;
+  padding: 12px;
+  text-align:center;
+  width: fit-content;
+  display:inline-block;
+}
+.button-container{
+  padding:35px;
+}
+
+/* Form mods */
+.hostmgmtform{
+  padding:30px;
+  font-size:1em;
+  text-align:left;
+}
+.help-block{
+  display: inline-block !important;
+}
+.hostmgmtform input,select{
+      padding: 14px;
+    text-align: center;
+    font-size: 1.1em;
+    width: 40%;
+}
+.hostmgmtform button{
+  margin:0 auto;
+  border-radius:8px;
+  border: 1px solid #540000;
+  background:white;
+  color: #540000 !important;
+}
+.hostmgmtform .inputcontainer{
+  margin:20px;
+  padding:5px;
+
+}
+/* Begin loader stuff */ 
+
+.whitebg{
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+ background:white;
+ z-index:10;
+ overflow:hidden;
+}
+.loader{
+  border-top: 30px double #3F0000 !important;
+  border-bottom: 30px double #720011 !important;
+  border-right: 60px solid #160000 !important;
+  border-left: 30px double black !important;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s cubic-bezier(0.72, 0.57, 0.45, 0.68) infinite;
+  border-radius:50%;
+  position: fixed;
+  z-index: 15;
+  overflow: show;
+  margin: -75px 0 0 -75px;
+  top:50%;
+  left:50%;
+}
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+/* Having to fix CSS issues due to static CofC css not working with more updated Bootstrap; have to to do this to
+stay in line with CofC theme
+*/
+.custom-sec-nav{
+  padding:0;
+  font-size:12px;
+  color:#999;
+  position: static !important;
+    width: 100% !important;
+    margin-bottom: 0 !important;
+  display:block !important;
+}
+.custom-navbar-inner{
+  background-color: #1b1b1b;
+    background-image: linear-gradient(to bottom,#222,#111);
+    background-repeat: repeat-x;
+    order-color: #252525;
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,.1), 0 1px 10px rgba(0,0,0,.1);
+  border:0;
+  padding-left:20px;
+  padding-right:20px;
+  border-radius:0;
+  min-height:32px !important;
+}
+.custom-navbar-inner:after{
+  display: table ;
+  content:"";
+  clear:both;
+}
+.custom-container{
+  padding-left:auto;
+    padding-right: auto;
+}
+.custom-row{
+  margin-left:-20px !important;
+  margin-right:auto !important;
+}
+#prim-nav{
+  line-height:20px !important;
+  padding:0 !important;
+  font-size:14px !important;
+}
+#prim-nav .navbar-inner{
+  border: none !important;
+    background-color: #710000 !important;
+    background-image: none !important;;
+    min-height: 40px !important;;
+    text-align: center !important;
+  width:100%;
+  color:white;
+}
+.custom-nav-collapse{
+  position:static;
+  display:block;
+  text-align:center;
+
+}

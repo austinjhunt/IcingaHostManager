@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    {% load static %}
+    {% load compress %}
+    <meta charset="utf-8"/>
+    <title>College of Charleston</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <!-- needs to be served over https
+        <link rel="shortcut icon" href="http://www.cofc.edu/favicon.ico"/>-->
+
+    {% compress css %}
+        <!-- CofC Styles -->
+        <link href="{% static 'css/cofcstyle.css' %}" rel="stylesheet">
+        <link href="{% static 'css/cofcstyle2.css' %}" rel="stylesheet">
+
+
+        <!-- New -->
+        <!-- MDBootstrap Datatables  -->
+        <link href="{% static 'css/addons/datatables.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/addons/datatables-select.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/mdb.min.css' %}" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {% endcompress %}
+
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+    <script>
+        var page = "{{ page }}";
+
+        var status = "{{ status }}";
+
+    </script>
+    {% compress js %}
+        <!-- Mine -->
+        <!-- MDBootstrap Datatables  -->
+        <script type="text/javascript" src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/mdb.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/addons/datatables.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/addons/datatables-select.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/bootstrap-tab.js' %}"></script>
+    {% endcompress %}
+
+    <title>
+        Icinga2 Host Manager
+    </title>
+
+</head>
+
+
+<body id="body">
+<div id="loader" class="loader"></div>
+<div id="whitebg"
+     style="position:fixed;top:0;left:0;right:0;bottom:0; background:white;z-index:10;overflow:hidden;"></div>
+
+<script>
+    var page = "{{ page }}";
+    var status = "{{ status }}";
+</script>
+
+<ul id="access-nav">
+    <li><a href="#bd-content" tabindex="1">Skip to Main Content</a></li>
+</ul>
+<div id="pg">
+    <div id="hd">
+        <div id="sec-nav" class="navbar navbar-inverse navbar-static-top custom-sec-nav">
+            <div class="navbar-inner custom-navbar-inner">
+                <div class="container custom-container">
+                    <button type="button" class="btn btn-navbar collapsed" data-toggle="collapse" data-target="#nav2">
+                        <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+                    </button>
+                    <div class="nav-collapse collapse show" id="nav2" style="height: 0px;">
+                        <ul class="nav pull-right">
+                            <li><a href="https://my.cofc.edu">MyCharleston</a></li>
+                            <li><a href="http://cofc.edu/library/">Library</a></li>
+                            <li><a href="http://cofc.edu/directory/">Directory</a></li>
+                            <li><a href="http://cofc.edu/siteindex/">Site Index</a></li>
+                            <li><a href="http://emergency.cofc.edu">Emergency Info</a></li>
+                            <li>
+                                <form action="http://cofc.edu/search/" method="get" name="topSearch">
+                                    <input type="hidden" value="cofc.edu" name="site">
+                                    <div id="search" class="input-append">
+                                        <input class="span2 searchbox" id="appendedInput" type="text"
+                                               placeholder="Search" name="q" title="Search CofC">
+                                        <i class="icon-search icon-white"></i></div>
+                                    <div class="radio" style="display:inline-block">
+                                        <label class="checkbox inline" style="font-size:10px;" for="site-cofc">
+                                            <input type="radio" id="site-cofc" name="type" value="cofc" checked="">
+                                            CofC </label>
+                                        <label class="checkbox inline" style="font-size:10px;" for="site-search">
+                                            <input type="radio" id="site-search" name="type" value="site">
+                                            Site </label>
+                                    </div>
+                                </form>
+                            </li>
+                        </ul><!--/.nav pull-right -->
+                    </div><!--/.nav-collapse -->
+                </div><!--/.container-->
+            </div><!--/.navbar-inner-->
+        </div><!--/#sec-nav .navbar-->
+        <div class="row branding custom-row">
+            <div class="container custom-conta">
+                <div class="wordmark">
+                    <a href="http://cofc.edu">
+                        <img src="http://cofc.edu/images/cofc-logo-2014d.png" alt="CofC Logo"/></a></div>
+                <!--CLOSE wordmark-->
+            </div><!--/.container-->
+        </div><!--/.row-->
+        <div id="prim-nav" class="navbar yamm">
+            <div class="navbar-inner custom-navbar-inner">
+                <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target="#nav1"><span
+                        class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
+                <div class="nav-collapse collapse show" id="nav1">
+                    <ul class="nav">
+                        <!-- Admissions and Financial Aid Dropdown -->
+                        <li class="dropdown"><a href="http://cofc.edu/admission-and-financial-aid/"
+                                                class="dropdown-toggle"
+                                                onclick="trackOutboundLink('http://cofc.edu/admission-and-financial-aid/'); return false;">Admission
+                            and Financial Aid</a>
+                        </li><!-- ABOUT dropdown -->
+                        <li class="dropdown"><a href="http://cofc.edu/about/" class="dropdown-toggle"
+                                                onclick="trackOutboundLink('http://cofc.edu/about/'); return false;">About</a>
+                        </li><!-- Academics dropdown -->
+                        <li class="dropdown"><a href="http://cofc.edu/academics/" class="dropdown-toggle"
+                                                onclick="trackOutboundLink('http://cofc.edu/academics/'); return false;">Academics</a>
+                        </li>
+                        <!-- CAMPUS LIFE dropdown -->
+                        <li class="dropdown"><a href="http://cofc.edu/campuslife/" class="dropdown-toggle"
+                                                onclick="trackOutboundLink('http://cofc.edu/campuslife/'); return false;">Campus
+                            Life</a>
+                        </li>
+                        <!-- ATHLETICS dropdown -->
+                        <li class="dropdown"><a href="http://cofc.edu/athletics/" class="dropdown-toggle"
+                                                onclick="trackOutboundLink('http://cofc.edu/athletics/'); return false;">Athletics</a>
+                        </li>
+                        <!-- ALUMNI dropdown -->
+                        <li class="dropdown"><a href="http://alumni.cofc.edu/" class="dropdown-toggle"
+                                                onclick="trackOutboundLink('http://alumni.cofc.edu/'); return false;">Alumni</a>
+                        </li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div><!--/navbar-inner -->
+        </div><!--/#prim-nav-->
+    </div><!--/#hd -->
+
+</div>
+<div class="container text-center">
+    <br/>
+    <h2>Welcome to the Icinga2 Host Manager</h2>
+    <h4>Here, you can easily add hosts for Icinga2 to monitor, either one at a time or in bulk via a CSV upload.
+        New additions will trigger the deployment of a new Icinga configuration that includes monitoring for the hosts you've
+        added. You will be asked to confirm the new addition after you submit one of the following forms. Please ensure all
+    details are correct before confirming.</h4>
+</div>
+<br/>
+<!-- /#bd -->
+<style>
+    .nav-tabs li a {
+        color: #530000;
+        font-weight: bold;
+        background-color: white;
+    }
+
+    .nav-tabs li.active a {
+        color: white;
+        background-color: #530000;
+        font-weight: bold;
+    }
+
+    .required:after {
+        font-size: 1.5em;
+        content: " *";
+        color: red;
+    }
+
+
+</style>
+<div style="text-align: center">
+    <!--<div style="text-align:left">
+
+    </div>-->
+
+    <div class="containers_container">
+        <!--<button class="btn btn-lg students toggletablebutton"
+            onclick="$('#facultyTableContainer').toggle('slow');$('#studentTableContainer').toggle('slow'); $(this).toggleClass('students faculty');"></button>-->
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab" href="#singlehostformcontainer">Add a Single Host</a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#bulkuploadhostsformcontainer">Bulk Upload Hosts</a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#availablecheckscontainer">Available Checks</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div id="singlehostformcontainer" class="tab-pane active">
+                <form class="hostmgmtform" method="post" id="singlehostform" action="/addsinglehost/">
+                    <div class="inputcontainer required">
+                        <input id="hostname" name="hostname" type="text" placeholder="Host Name"
+                               class="form-control input-md d-inline-block" required>
+                        <span class="help-block">Name of the host</span>
+                    </div>
+                    <div class="inputcontainer required">
+                        <input id="hostaddress" name="hostaddress" type="text" placeholder="Host address"
+                               class="form-control input-md" required>
+                        <span class="help-block">Either the IP or the FQDN of the Host (preferably FQDN); this could be the same as the Host Name</span>
+                    </div>
+                    <div class="inputcontainer required">
+                        <select id="hoststate" name="hoststate" required>
+                            <option value="On">On</option>
+                            <option value="Off">Off</option>
+                        </select>
+                        <span class="help-block">Current state of the host</span>
+                    </div>
+                    <div class="inputcontainer required">
+                        <select id="hostos" name="hostos" required>
+                            <option value="Windows">Windows</option>
+                            <option value="Red Hat">Red Hat/RHEL</option>
+                            <option value="macOS">macOS</option>
+                            <option value="Ubuntu">Ubuntu</option>
+                            <option value="CentOS">CentOS</option>
+                        </select>
+                        <span class="help-block">Operating system running on Host</span>
+                    </div>
+                    <div class="inputcontainer required">
+                        <select id="hostenv" name="hostenv" required>
+                            <option value="Drake">Drake</option>
+                            <option value="Echo">Echo</option>
+                            <option value="Cypress">Cypress</option>
+                        </select>
+                        <span class="help-block">Name of the host's environment</span>
+                    </div>
+                    <div class="inputcontainer">
+                        <select id="hostnetzone" name="hostnetzone">
+                            <option value="0">--select--</option>
+                            <option value="Test">Test</option>
+                            <option value="Production">Production</option>
+                            <option value="Management">Management</option>
+                            <option value="Development">Development</option>
+                        </select>
+                        <span class="help-block">To which network does the host belong?</span>
+                    </div>
+                    <div class="inputcontainer">
+                        <input id="hostnotes" name="hostnotes" type="text" placeholder="Host notes"
+                               class="form-control input-md">
+                        <span class="help-block">Any notes about the host</span>
+                    </div>
+                    <div class="inputcontainer">
+                        <input id="hostnumcpus" name="hostnumcpus" type="number" placeholder="# CPUs"
+                               class="form-control input-md">
+                        <span class="help-block">How many CPUs does host have? </span>
+                    </div>
+                    <!-- hidden textarea for maintaining a list of checks to execute to include in post request -->
+                    <div style="display:none">
+                        <textarea id="checks_to_execute" name="checks_to_execute"></textarea>
+                    </div>
+                <div>
+                <h4>Select the checks you would like to execute on this host (by default, ping4 will be executed regardless)</h4>
+                    <div id="checksTableContainer" class="tablecontainer text-center">
+                        <table id="checksTable" data-toggle="table" data-search="true"
+                               class="table table-bordered table-sm" cellspacing="0" width="100%">
+                            <thead>
+                            <tr>
+                                <th class="th-sm">Check Name</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for c in available_checks %}
+                                <tr>
+                                    <td>{{ c }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th class="th-sm">Check Name</th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- append here when check is selected -->
+                    <div class="selectedcheckscontainer"><span>Checks you've selected:</span><br/></div>
+                </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-lg">Submit</button>
+                    </div>
+                </form>
+
+            </div>
+
+            <div id="bulkuploadhostsformcontainer" class="tab-pane fade">
+
+                <form class="hostmgmtform" method="post" id="bulkuploadhostform" action="/bulkuploadhosts/" enctype="multipart/form-data">
+                    <div class="inputcontainer">
+                        <input id="fields_ordered" name="fields_ordered" type="text" placeholder="Ordered Fields"
+                               class="form-control input-md">
+                        <span class="help-block">Specify the fields in your CSV, in order from left to right, separated by commas. The table below
+                        shows the available fields you can specify. <strong>Be sure to wrap in double quotes ("") any fields containing commas
+                            (e.g. columns such as notes, checks_to_execute, process_names, http_vhosts, etc.)</strong></span>
+                    </div>
+                    <table id="availablefields" class="table table-bordered table-sm" cellspacing="0" width="100%">
+                        <thead>
+                            <th>Field</th>
+                            <th>Description</th>
+                            <th>Required?</th>
+                        </thead>
+                        <tbody>
+                            {% for f in available_fields %}
+                                <tr>
+                                <td>{{ f.name }}</td>
+                                <td>{{ f.description }}</td>
+                                {% if f.required %}
+                                    <td style="color:red">Required</td>
+                                {% else %}
+                                    <td>No</td>
+                                {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="inputcontainer">
+                        <input id="hostsfile" name="hostsfile" type="file" accept=".csv" style="height:auto;"
+                               class="form-control input-md" required>
+                        <span class="help-block">Upload a CSV of your hosts.</span>
+                    </div>
+                    <div class="inputcontainer required">
+                        <input id="includesheadercheckbox" style="width:fit-content;font-size:1.5em; margin-bottom:10px;" type="checkbox" name="includesheader">
+                        <span class="help-block"><strong>Check if this CSV includes a header line</strong></span>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-lg">Submit</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="availablecheckscontainer" class="tab-pane fade">
+                <table id="checksTable2" data-toggle="table" data-search="true"
+                       class="table table-bordered table-sm" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th class="th-sm">Check Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for c in available_checks %}
+                        <tr>
+                            <td>{{ c }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th class="th-sm">Check Name</th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<footer id="ft">
+    <div id="social-media-bar">
+        <a href="https://www.facebook.com/collegeofcharleston"><img alt="Facebook"
+                                                                    src="http://www.cofc.edu/images/social-media-icons/xcircle-facebook.png.pagespeed.ic.fNxtVVObwg.png"></a>
+        <a href="http://www.flickr.com/photos/collegeofcharleston"><img alt="Flickr"
+                                                                        src="http://www.cofc.edu/images/social-media-icons/xcircle-flickr.png.pagespeed.ic.BbUWMqB1OW.png"></a>
+        <a href="https://plus.google.com/u/0/104532845391958515458"><img alt="Google Plus"
+                                                                         src="http://www.cofc.edu/images/social-media-icons/xcircle-google+.png.pagespeed.ic.S3KU6Csrrs.png"></a>
+        <a href="http://instagram.com/collegeofcharleston"><img alt="Google Plus"
+                                                                src="http://www.cofc.edu/images/social-media-icons/xcircle-instagram.png.pagespeed.ic._omIfUbF0F.png"></a>
+        <a href="http://www.linkedin.com/edu/school?id=19364"><img alt="LinkedIn"
+                                                                   src="http://www.cofc.edu/images/social-media-icons/xcircle-linkedin.png.pagespeed.ic.eXzYsJ1sYy.png"></a>
+        <a href="http://twitter.com/CofC"><img alt="Twitter"
+                                               src="http://www.cofc.edu/images/social-media-icons/xcircle-twitter.png.pagespeed.ic.wXu67OKLw9.png"></a>
+        <a href="http://www.youtube.com/user/collegeofcharleston"><img alt="YouTube"
+                                                                       src="http://www.cofc.edu/images/social-media-icons/xcircle-youtube.png.pagespeed.ic.nEMHnaeRXR.png"></a>
+        <a href="http://cofc.edu/about/socialmedia/index.php"><img alt="Other Social Media"
+                                                                   src="http://www.cofc.edu/images/social-media-icons/xcircle-more.png.pagespeed.ic.n9CPGrTbSH.png"></a>
+    </div>
+    <div class="container">
+        <div id="ft-wrapper">
+            <div class="row-fluid">
+                <div class="span3">
+                    <div id="footer-1">
+                        <a href="http://cofc.edu/">
+                            <img width="200" height="55"
+                                 src="http://www.cofc.edu/images/200x55xcofc-logo-2014.png.pagespeed.ic.j2xj23VvvW.png"
+                                 alt="CofC Logo">
+                        </a>
+                        <address>
+
+
+                            66 George Street<br>
+                            Charleston, South Carolina 29424<br>
+                            843.805.5507
+                        </address>
+                    </div>
+                </div>
+                <div class="span3">
+                    <div id="footer-2">
+                        <h5>Colleges and Schools</h5>
+                        <ul class="unstyled">
+                            <li><a href="http://sota.cofc.edu/">Arts</a></li>
+                            <li><a href="http://sb.cofc.edu/">Business</a></li>
+                            <li><a href="http://ehhp.cofc.edu/">Education, Health and Human Perfomance</a></li>
+                            <li><a href="http://hss.cofc.edu/">Humanities and Social Sciences</a></li>
+                            <li><a href="http://lcwa.cofc.edu/">Languages, Cultures and World Affairs</a></li>
+                            <li><a href="http://ssm.cofc.edu/">Sciences and Mathematics</a></li>
+                            <li><a href="http://gradschool.cofc.edu/">Graduate School</a></li>
+                            <li><a href="http://honorscollege.cofc.edu/">Honors College</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="span3">
+                    <div id="footer-3">
+                        <h5>Information For</h5>
+                        <ul class="unstyled">
+                            <li><a href="https://my.cofc.edu/cp/home/displaylogin">Current Students</a></li>
+                            <li><a href="https://my.cofc.edu/cp/home/displaylogin">Faculty and Staff</a></li>
+                            <li><a href="http://alumni.cofc.edu/">Alumni</a></li>
+                            <li><a href="http://www.cofc.edu/families/">Families/Parents</a></li>
+                            <li>
+                                <a href="http://admissions.cofc.edu/applyingtothecollege/international-students/index.php">International
+                                    Students</a></li>
+                            <li><a href="https://jobs.cofc.edu">Job Applicants</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="span3">
+                    <div id="footer-4">
+                        <h5>Quick Links</h5>
+                        <ul class="unstyled">
+                            <li><a href="http://publicsafety.cofc.edu">Public Safety</a></li>
+                            <li><a href="https://jobs.cofc.edu">Campus Jobs</a></li>
+                            <li><a href="http://bookstore.cofc.edu/">Bookstore</a></li>
+                            <li><a href="http://giving.cofc.edu">Giving</a></li>
+                            <li><a href="http://cofc.edu/about/contactus/">Contact Us</a></li>
+                            <li><a href="http://it.cofc.edu">Information Technology</a></li>
+                            <li><a href="http://transparency.cofc.edu/">Transparency Spending</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="copyright">Copyright &copy; 2014 All Right Reserved. College of Charleston | <a
+                href="http://www.cofc.edu/policies/privacypolicy/">Privacy Policy</a></div>
+    </div>
+</footer><!-- #ft -->
+</div><!-- #pg -->
+
+<script>(document, "script", "twitter-wjs");
+jQuery('ul.nav li.dropdown').hover(function () {
+    jQuery(this).find('.dropdown-menu').stop(true, true).delay(200).fadeIn();
+}, function () {
+    jQuery(this).find('.dropdown-menu').stop(true, true).delay(200).fadeOut();
+});</script>
+<!--CRAZYEGG HEATMAP -->
+
+
+<script>$(document).ready(function () {
+    $("#aside-links a,#aside-social a, #aside-quick-links a").attr("target", "_blank");
+});
+$("a[href^=mailto]").click(function () {
+    var email = $(this).attr('href').replace(/mailto:/, '');
+    _gaq.push(['_trackEvent', 'Click Email Address', email]);
+    ga('send', 'event', 'link', 'Click Email Address', '', email);
+});</script>
+
+
+<!--
+    ******             ****   ******
+  **////**           /**/   **////**
+ **    //   ******  ****** **    //
+/**        **////**///**/ /**
+/**       /**   /**  /**  /**
+//**    **/**   /**  /**  //**    **
+ //****** //******   /**   //******
+  //////   //////    //     //////
+
+amaker.cofc.edu-->
+
+</body>
+</html>

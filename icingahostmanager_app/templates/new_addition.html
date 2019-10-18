@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    {% load static %}
+    {% load compress %}
+    <meta charset="utf-8"/>
+    <title>College of Charleston</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <!-- needs to be served over https
+        <link rel="shortcut icon" href="http://www.cofc.edu/favicon.ico"/>-->
+
+    {% compress css %}
+        <!-- CofC Styles -->
+        <link href="{% static 'css/cofcstyle.css' %}" rel="stylesheet">
+        <link href="{% static 'css/cofcstyle2.css' %}" rel="stylesheet">
+
+
+        <!-- New -->
+        <!-- MDBootstrap Datatables  -->
+        <link href="{% static 'css/addons/datatables.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/mdb.min.css' %}" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {% endcompress %}
+
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+    {% compress js %}
+        <!-- Mine -->
+        <!-- MDBootstrap Datatables  -->
+        <script type="text/javascript" src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/mdb.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/addons/datatables.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/bootstrap-tab.js' %}"></script>
+    {% endcompress %}
+
+</head>
+<body id="body">
+<div id="loader" class="loader"></div>
+<div id="whitebg"
+     style="position:fixed;top:0;left:0;right:0;bottom:0; background:white;z-index:10;overflow:hidden;"></div>
+
+
+<ul id="access-nav">
+    <li><a href="#bd-content" tabindex="1">Skip to Main Content</a></li>
+</ul>
+<div id="pg">
+    <div id="hd">
+        <div id="sec-nav" class="navbar navbar-inverse navbar-static-top custom-sec-nav">
+            <div class="navbar-inner custom-navbar-inner">
+                <div class="container custom-container">
+                    <button type="button" class="btn btn-navbar collapsed" data-toggle="collapse" data-target="#nav2">
+                        <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+                    </button>
+                    <div class="nav-collapse collapse show" id="nav2" style="height: 0px;">
+                        <ul class="nav pull-right">
+                            <li><a href="https://my.cofc.edu">MyCharleston</a></li>
+                            <li><a href="http://cofc.edu/library/">Library</a></li>
+                            <li><a href="http://cofc.edu/directory/">Directory</a></li>
+                            <li><a href="http://cofc.edu/siteindex/">Site Index</a></li>
+                            <li><a href="http://emergency.cofc.edu">Emergency Info</a></li>
+                            <li>
+                                <form action="http://cofc.edu/search/" method="get" name="topSearch">
+                                    <input type="hidden" value="cofc.edu" name="site">
+                                    <div id="search" class="input-append">
+                                        <input class="span2 searchbox" id="appendedInput" type="text"
+                                               placeholder="Search" name="q" title="Search CofC">
+                                        <i class="icon-search icon-white"></i></div>
+                                    <div class="radio" style="display:inline-block">
+                                        <label class="checkbox inline" style="font-size:10px;" for="site-cofc">
+                                            <input type="radio" id="site-cofc" name="type" value="cofc" checked="">
+                                            CofC </label>
+                                        <label class="checkbox inline" style="font-size:10px;" for="site-search">
+                                            <input type="radio" id="site-search" name="type" value="site">
+                                            Site </label>
+                                    </div>
+                                </form>
+                            </li>
+                        </ul><!--/.nav pull-right -->
+                    </div><!--/.nav-collapse -->
+                </div><!--/.container-->
+            </div><!--/.navbar-inner-->
+        </div><!--/#sec-nav .navbar-->
+        <div class="row branding custom-row">
+            <div class="container custom-conta">
+                <div class="wordmark">
+                    <a href="http://cofc.edu">
+                        <img src="http://cofc.edu/images/cofc-logo-2014d.png" alt="CofC Logo"/></a></div>
+                <!--CLOSE wordmark-->
+            </div><!--/.container-->
+        </div><!--/.row-->
+        <div id="prim-nav" class="navbar yamm">
+            <div class="navbar-inner custom-navbar-inner">
+                <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target="#nav1"><span
+                        class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
+                <div class="nav-collapse collapse show" id="nav1">
+                    <ul class="nav">
+                        <!-- Admissions and Financial Aid Dropdown -->
+                        <li class="dropdown"><a href="http://cofc.edu/admission-and-financial-aid/"
+                                                class="dropdown-toggle"
+                                                onclick="trackOutboundLink('http://cofc.edu/admission-and-financial-aid/'); return false;">Admission
+                            and Financial Aid</a>
+                        </li><!-- ABOUT dropdown -->
+                        <li class="dropdown"><a href="http://cofc.edu/about/" class="dropdown-toggle"
+                                                onclick="trackOutboundLink('http://cofc.edu/about/'); return false;">About</a>
+                        </li><!-- Academics dropdown -->
+                        <li class="dropdown"><a href="http://cofc.edu/academics/" class="dropdown-toggle"
+                                                onclick="trackOutboundLink('http://cofc.edu/academics/'); return false;">Academics</a>
+                        </li>
+                        <!-- CAMPUS LIFE dropdown -->
+                        <li class="dropdown"><a href="http://cofc.edu/campuslife/" class="dropdown-toggle"
+                                                onclick="trackOutboundLink('http://cofc.edu/campuslife/'); return false;">Campus
+                            Life</a>
+                        </li>
+                        <!-- ATHLETICS dropdown -->
+                        <li class="dropdown"><a href="http://cofc.edu/athletics/" class="dropdown-toggle"
+                                                onclick="trackOutboundLink('http://cofc.edu/athletics/'); return false;">Athletics</a>
+                        </li>
+                        <!-- ALUMNI dropdown -->
+                        <li class="dropdown"><a href="http://alumni.cofc.edu/" class="dropdown-toggle"
+                                                onclick="trackOutboundLink('http://alumni.cofc.edu/'); return false;">Alumni</a>
+                        </li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div><!--/navbar-inner -->
+        </div><!--/#prim-nav-->
+    </div><!--/#hd -->
+
+</div>
+
+<div style="width:90%; margin: 20px auto;">
+        <h3 id="msg"></h3>
+
+        {% if hostinfo is None %}
+        {% else %}
+            <table id="hostinfotable" class="table table-bordered table-sm" cellspacing="0" width="100%">
+                <thead>
+                <th>Name</th>
+                <th>Address</th>
+                <th>State</th>
+                <th>Notes</th>
+                <th>&#35; CPUs</th>
+                <th>Env</th>
+                <th>Zone</th>
+                <th>OS</th>
+                <th>Checks</th>
+                <th>Process Names</th>
+                <th>Disable Notifications</th>
+                <th>Disable WMI</th>
+                <th>Disable SSH</th>
+                <th>VHosts</th>
+                <th>Datacenter</th>
+                <th>Cluster</th>
+                </thead>
+                <tbody>
+                {% for h in hostinfo %}
+                    <tr>
+                    <td>{{ h.name }}</td>
+                    <td>{{ h.address }}</td>
+                    <td>{{ h.state}}</td>
+                    <td>{{ h.notes }}</td>
+                    <td>{{ h.num_cpus }}</td>
+                    <td>{{ h.env }}</td>
+                    <td>{{ h.netzone }}</td>
+                    <td>{{ h.os }}</td>
+                    <td>{{ h.checks }}</td>
+                    <td>{{ h.process_names}}</td>
+                    <td>{{ h.disable_notifications}}</td>
+                    <td>{{ h.disable_wmi}}</td>
+                    <td>{{ h.disable_ssh}}</td>
+                    <td>{{ h.http_vhosts}}</td>
+                    <td>{{ h.datacenter}}</td>
+                    <td>{{ h.cluster}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                <th>Name</th>
+                <th>Address</th>
+                <th>State</th>
+                <th>Notes</th>
+                <th>&#35; CPUs</th>
+                <th>Env</th>
+                <th>Zone</th>
+                <th>OS</th>
+                <th>Checks</th>
+                <th>Process Names</th>
+                <th>Disable Notifications</th>
+                <th>Disable WMI</th>
+                <th>Disable SSH</th>
+                <th>VHosts</th>
+                <th>Datacenter</th>
+                <th>Cluster</th>
+                </tfoot>
+                </thead>
+            </table>
+            <script>
+            $("#hostinfotable").DataTable({
+                dom: 'flBtipr',
+                buttons: [ 'columnsToggle' ],
+                hideEmptyCols: true
+            });
+            </script>
+        {% endif %}
+</div>
+<!-- /#bd -->
+<style>
+    .nav-tabs li a {
+        color: #530000;
+        font-weight: bold;
+        background-color: white;
+    }
+
+    .nav-tabs li.active a {
+        color: white;
+        background-color: #530000;
+        font-weight: bold;
+    }
+</style>
+
+
+<footer id="ft">
+    <div id="social-media-bar">
+        <a href="https://www.facebook.com/collegeofcharleston"><img alt="Facebook"
+                                                                    src="http://www.cofc.edu/images/social-media-icons/xcircle-facebook.png.pagespeed.ic.fNxtVVObwg.png"></a>
+        <a href="http://www.flickr.com/photos/collegeofcharleston"><img alt="Flickr"
+                                                                        src="http://www.cofc.edu/images/social-media-icons/xcircle-flickr.png.pagespeed.ic.BbUWMqB1OW.png"></a>
+        <a href="https://plus.google.com/u/0/104532845391958515458"><img alt="Google Plus"
+                                                                         src="http://www.cofc.edu/images/social-media-icons/xcircle-google+.png.pagespeed.ic.S3KU6Csrrs.png"></a>
+        <a href="http://instagram.com/collegeofcharleston"><img alt="Google Plus"
+                                                                src="http://www.cofc.edu/images/social-media-icons/xcircle-instagram.png.pagespeed.ic._omIfUbF0F.png"></a>
+        <a href="http://www.linkedin.com/edu/school?id=19364"><img alt="LinkedIn"
+                                                                   src="http://www.cofc.edu/images/social-media-icons/xcircle-linkedin.png.pagespeed.ic.eXzYsJ1sYy.png"></a>
+        <a href="http://twitter.com/CofC"><img alt="Twitter"
+                                               src="http://www.cofc.edu/images/social-media-icons/xcircle-twitter.png.pagespeed.ic.wXu67OKLw9.png"></a>
+        <a href="http://www.youtube.com/user/collegeofcharleston"><img alt="YouTube"
+                                                                       src="http://www.cofc.edu/images/social-media-icons/xcircle-youtube.png.pagespeed.ic.nEMHnaeRXR.png"></a>
+        <a href="http://cofc.edu/about/socialmedia/index.php"><img alt="Other Social Media"
+                                                                   src="http://www.cofc.edu/images/social-media-icons/xcircle-more.png.pagespeed.ic.n9CPGrTbSH.png"></a>
+    </div>
+    <div class="container">
+        <div id="ft-wrapper">
+            <div class="row-fluid">
+                <div class="span3">
+                    <div id="footer-1">
+                        <a href="http://cofc.edu/">
+                            <img width="200" height="55"
+                                 src="http://www.cofc.edu/images/200x55xcofc-logo-2014.png.pagespeed.ic.j2xj23VvvW.png"
+                                 alt="CofC Logo">
+                        </a>
+                        <address>
+
+
+                            66 George Street<br>
+                            Charleston, South Carolina 29424<br>
+                            843.805.5507
+                        </address>
+                    </div>
+                </div>
+                <div class="span3">
+                    <div id="footer-2">
+                        <h5>Colleges and Schools</h5>
+                        <ul class="unstyled">
+                            <li><a href="http://sota.cofc.edu/">Arts</a></li>
+                            <li><a href="http://sb.cofc.edu/">Business</a></li>
+                            <li><a href="http://ehhp.cofc.edu/">Education, Health and Human Perfomance</a></li>
+                            <li><a href="http://hss.cofc.edu/">Humanities and Social Sciences</a></li>
+                            <li><a href="http://lcwa.cofc.edu/">Languages, Cultures and World Affairs</a></li>
+                            <li><a href="http://ssm.cofc.edu/">Sciences and Mathematics</a></li>
+                            <li><a href="http://gradschool.cofc.edu/">Graduate School</a></li>
+                            <li><a href="http://honorscollege.cofc.edu/">Honors College</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="span3">
+                    <div id="footer-3">
+                        <h5>Information For</h5>
+                        <ul class="unstyled">
+                            <li><a href="https://my.cofc.edu/cp/home/displaylogin">Current Students</a></li>
+                            <li><a href="https://my.cofc.edu/cp/home/displaylogin">Faculty and Staff</a></li>
+                            <li><a href="http://alumni.cofc.edu/">Alumni</a></li>
+                            <li><a href="http://www.cofc.edu/families/">Families/Parents</a></li>
+                            <li>
+                                <a href="http://admissions.cofc.edu/applyingtothecollege/international-students/index.php">International
+                                    Students</a></li>
+                            <li><a href="https://jobs.cofc.edu">Job Applicants</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="span3">
+                    <div id="footer-4">
+                        <h5>Quick Links</h5>
+                        <ul class="unstyled">
+                            <li><a href="http://publicsafety.cofc.edu">Public Safety</a></li>
+                            <li><a href="https://jobs.cofc.edu">Campus Jobs</a></li>
+                            <li><a href="http://bookstore.cofc.edu/">Bookstore</a></li>
+                            <li><a href="http://giving.cofc.edu">Giving</a></li>
+                            <li><a href="http://cofc.edu/about/contactus/">Contact Us</a></li>
+                            <li><a href="http://it.cofc.edu">Information Technology</a></li>
+                            <li><a href="http://transparency.cofc.edu/">Transparency Spending</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="copyright">Copyright &copy; 2014 All Right Reserved. College of Charleston | <a
+                href="http://www.cofc.edu/policies/privacypolicy/">Privacy Policy</a></div>
+    </div>
+</footer><!-- #ft -->
+</div><!-- #pg -->
+
+<script>(document, "script", "twitter-wjs");
+jQuery('ul.nav li.dropdown').hover(function () {
+    jQuery(this).find('.dropdown-menu').stop(true, true).delay(200).fadeIn();
+}, function () {
+    jQuery(this).find('.dropdown-menu').stop(true, true).delay(200).fadeOut();
+});</script>
+<!--CRAZYEGG HEATMAP -->
+
+<script>
+    var type = "{{ type }}";
+
+    if (type === "single success") {
+        $("#hostinfotable").DataTable();
+        $("#msg").css({'color': 'green'});
+        $("#msg").html("You have successfully added a new host!\n");
+    }
+    else if (type === "single fail") {
+        $("#msg").css({'color': 'red'});
+        $("#msg").html("Your new host addition did not successfully complete.");
+    }
+
+</script>
+
+
+<script>$(document).ready(function () {
+    $("#aside-links a,#aside-social a, #aside-quick-links a").attr("target", "_blank");
+});
+$("a[href^=mailto]").click(function () {
+    var email = $(this).attr('href').replace(/mailto:/, '');
+    _gaq.push(['_trackEvent', 'Click Email Address', email]);
+    ga('send', 'event', 'link', 'Click Email Address', '', email);
+});</script>
+
+
+<!--
+    ******             ****   ******
+  **////**           /**/   **////**
+ **    //   ******  ****** **    //
+/**        **////**///**/ /**
+/**       /**   /**  /**  /**
+//**    **/**   /**  /**  //**    **
+ //****** //******   /**   //******
+  //////   //////    //     //////
+
+amaker.cofc.edu-->
+
+</body>
+</html>
