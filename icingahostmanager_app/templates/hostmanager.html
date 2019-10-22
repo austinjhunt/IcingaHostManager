@@ -39,6 +39,7 @@
         <!-- Mine -->
         <!-- MDBootstrap Datatables  -->
         <script type="text/javascript" src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/mdb.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/addons/datatables.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/addons/datatables-select.min.js' %}"></script>
@@ -52,6 +53,35 @@
 
 </head>
 
+
+<div id="edithostmodal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" id="edithostmodal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+    <form action="/edit_host/" method="post">
+      <div class="modal-body">
+            <input type="hidden" name="host_id" id="host_id">
+
+          {%  for f in modal_fields %}
+              <div class="inputcontainer">
+              <label>{{ f }}</label><div style="width:5px;display: inline-block"></div><input name="edithostmodal_{{ f }}">
+              </div>
+          {% endfor %}
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" type="submit">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
 
 <body id="body">
 <div id="loader" class="loader"></div>
@@ -198,6 +228,9 @@
             <li>
                 <a data-toggle="tab" href="#availablecheckscontainer">Available Checks</a>
             </li>
+            <li>
+                <a data-toggle="tab" href="#edithostscontainer">Edit Exising Hosts</a>
+            </li>
         </ul>
         <div class="tab-content">
             <div id="singlehostformcontainer" class="tab-pane active">
@@ -238,7 +271,7 @@
                         <span class="help-block">Name of the host's environment</span>
                     </div>
                     <div class="inputcontainer">
-                        <select id="hostnetzone" name="hostnetzone">
+                        <select id="hostnetzone" name="hostnetwork_zone">
                             <option value="0">--select--</option>
                             <option value="Test">Test</option>
                             <option value="Production">Production</option>
@@ -253,13 +286,49 @@
                         <span class="help-block">Any notes about the host</span>
                     </div>
                     <div class="inputcontainer">
-                        <input id="hostnumcpus" name="hostnumcpus" type="number" placeholder="# CPUs"
+                        <input id="hostprocess_names" name="hostprocess_names" type="text" placeholder="Host process names"
+                               class="form-control input-md">
+                        <span class="help-block">A comma-separated list of processes to specifically check; only matters if running the
+                            "is_process_running.sh" check</span>
+                    </div>
+                    <div class="inputcontainer">
+                        <input id="hosthttp_vhosts" name="hosthttp_vhosts" type="text" placeholder="HTTP virtual host list"
+                               class="form-control input-md">
+                        <span class="help-block">A comma-separated list of HTTP Virtual Hosts running on Host (i.e. the
+                        ServerName value of each)</span>
+                    </div>
+                    <div class="inputcontainer">
+                        <input id="hostnumcpus" name="hostnum_cpus" type="number" placeholder="# CPUs"
                                class="form-control input-md">
                         <span class="help-block">How many CPUs does host have? </span>
                     </div>
+                    <div class="inputcontainer">
+                        <input id="hostdatacenter"class="form-control input-md" type="text" placeholder="Datacenter name" name="hostdatacenter">
+                        <span class="help-block">Name of the datacenter in which this host lives></span>
+                    </div>
+                    <div class="inputcontainer">
+                        <input id="hostcluster"  class="form-control input-md" type="text" placeholder="Cluster name" name="hostcluster">
+                        <span class="help-block">Name of the cluster to which this host belongs</span>
+                    </div>
+                    <div class="inputcontainer">
+                        <input type="hidden" value="0" name="hostdisable_notifications">
+                        <input id="hostdisable_notifications" value="1" style="width:fit-content;font-size:1.5em; margin-bottom:10px;" type="checkbox" name="hostdisable_notifications">
+                        <span class="help-block"><strong>Check to disable notifications for this host</strong></span>
+                    </div>
+                    <div class="inputcontainer">
+                         <input type="hidden" value="0" name="hostdisable_ssh">
+                        <input id="hostdisable_ssh" value="1" style="width:fit-content;font-size:1.5em; margin-bottom:10px;" type="checkbox" name="hostdisable_ssh">
+                        <span class="help-block"><strong>Check to disable SSH checks for this host (only affects Linux hosts)</strong></span>
+                    </div>
+                    <div class="inputcontainer">
+                        <input type="hidden" value="0" name="hostdisable_wmi">
+                        <input id="hostdisable_wmi" value="1" style="width:fit-content;font-size:1.5em; margin-bottom:10px;" type="checkbox" name="hostdisable_wmi">
+                        <span class="help-block"><strong>Check to disable WMI checks for this host (only affects Windows hosts)</strong></span>
+                    </div>
+
                     <!-- hidden textarea for maintaining a list of checks to execute to include in post request -->
                     <div style="display:none">
-                        <textarea id="checks_to_execute" name="checks_to_execute"></textarea>
+                        <textarea id="checks_to_execute" name="hostchecks_to_execute"></textarea>
                     </div>
                 <div>
                 <h4>Select the checks you would like to execute on this host (by default, ping4 will be executed regardless)</h4>
@@ -332,8 +401,14 @@
                         <span class="help-block">Upload a CSV of your hosts.</span>
                     </div>
                     <div class="inputcontainer required">
-                        <input id="includesheadercheckbox" style="width:fit-content;font-size:1.5em; margin-bottom:10px;" type="checkbox" name="includesheader">
+                        <input type="hidden" value="0" name="includesheader">
+                        <input id="includesheadercheckbox" value="1"  style="width:fit-content;font-size:1.5em; margin-bottom:10px;" type="checkbox" name="includesheader">
                         <span class="help-block"><strong>Check if this CSV includes a header line</strong></span>
+                    </div>
+                     <div class="inputcontainer required">
+                        <input type="hidden" value="0" name="use_name_as_address">
+                        <input id="use_name_as_address" value="1" style="width:fit-content;font-size:1.5em; margin-bottom:10px;" type="checkbox" name="use_name_as_address">
+                        <span class="help-block"><strong>Check if the name can be used as the address; if this is checked, you don't need to include a separate address column</strong></span>
                     </div>
                     <div class="text-center">
                         <button type="submit" class="btn btn-lg">Submit</button>
@@ -362,6 +437,113 @@
                     </tr>
                     </tfoot>
                 </table>
+            </div>
+
+            <div id="edithostscontainer" class="tab-pane fade">
+            <div>
+                <strong>Toggle Visibility: </strong>
+                <a class="toggle-vis" data-column="0">Name</a>
+                <a class="toggle-vis" data-column="1">Address</a>
+                <a class="toggle-vis" data-column="2">State</a>
+                <a class="toggle-vis" data-column="3">Notes</a>
+                <a class="toggle-vis" data-column="4">&#35; CPUs</a>
+                <a class="toggle-vis" data-column="7">OS</a>
+                <a class="toggle-vis" data-column="5">Env</a>
+                <a class="toggle-vis" data-column="6">Zone</a>
+                <a class="toggle-vis" data-column="8">Checks</a>
+                <a class="toggle-vis toggle-vis-off" data-column="9">Datacenter</a>
+                <a class="toggle-vis toggle-vis-off" data-column="10">Cluster</a>
+                <a class="toggle-vis toggle-vis-off" data-column="11">Process Names</a>
+                <a class="toggle-vis toggle-vis-off" data-column="12">Disable Notifications</a>
+                <a class="toggle-vis toggle-vis-off" data-column="13">Disable WMI</a>
+                <a class="toggle-vis toggle-vis-off" data-column="14">Disable SSH</a>
+                <a class="toggle-vis toggle-vis-off" data-column="15">VHosts</a>
+            </div>
+                <button onclick="modal_prep_work(() => showedithostmodal())" class="btn btn-lg" style="color:white;
+                 background:#540000; float:left; margin:20px;">Edit Selected Host</button>
+                <table id="edithoststable" data-toggle="table" data-search="true"
+                       class="table table-bordered table-sm" cellspacing="0" width="100%">
+                    <thead>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>State</th>
+                        <th>Notes</th>
+                        <th>&#35; CPUs</th>
+                        <th>OS</th>
+                        <th>Env</th>
+                        <th>Zone</th>
+                        <th>Checks</th>
+                        <th>Datacenter</th>
+                        <th>Cluster</th>
+                        <th>Process Names</th>
+                        <th>Disable Notifications</th>
+                        <th>Disable WMI</th>
+                        <th>Disable SSH</th>
+                        <th>VHosts</th>
+                    </thead>
+                    <tbody>
+                    {% for h in existing_hosts %}
+                        <tr id="{{ h.id }}">
+                            <td>{{ h.name }}</td>
+                            <td>{{ h.address }}</td>
+                            <td>{{ h.state }}</td>
+                            <td>{{ h.notes }}</td>
+                            <td>{{ h.num_cpus }}</td>
+                            <td>{{ h.os }}</td>
+                            <td>{{ h.env }}</td>
+                            <td>{{ h.network_zone }}</td>
+                            <td>{{ h.checks_to_execute }}</td>
+                            <td>{{ h.datacenter }}</td>
+                            <td>{{ h.cluster }}</td>
+                            <td>{{ h.process_names }}</td>
+                            <td>{{ h.disable_notifications }}</td>
+                            <td>{{ h.disable_wmi }}</td>
+                            <td>{{ h.disable_ssh }}</td>
+                            <td>{{ h.http_vhosts }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>State</th>
+                        <th>Notes</th>
+                        <th>&#35; CPUs</th>
+                        <th>OS</th>
+                        <th>Env</th>
+                        <th>Zone</th>
+                        <th>Checks</th>
+                        <th>Datacenter</th>
+                        <th>Cluster</th>
+                        <th>Process Names</th>
+                        <th>Disable Notifications</th>
+                        <th>Disable WMI</th>
+                        <th>Disable SSH</th>
+                        <th>VHosts</th>
+                    </tfoot>
+                </table>
+            <script>
+                var edithoststable = $("#edithoststable").DataTable({
+                    dom: 'flBtipr',
+                    buttons: ['columnsToggle'],
+                    hideEmptyCols: true
+                });
+
+                var togglevis = $('#edithostscontainer a.toggle-vis').on('click', function (e) {
+                    e.preventDefault();
+                    // Get the column API object
+                    var column = edithoststable.column($(this).attr('data-column'));
+                    $(this).toggleClass('toggle-vis-off');
+                    // Toggle the visibility
+                    column.visible(!column.visible());
+                });
+                $('#edithostscontainer a.toggle-vis-off').each(function (i) {
+                    if ($(this).hasClass('toggle-vis-off')) {
+                        var column = edithoststable.column($(this).attr('data-column'));
+                        column.visible(false);
+                    }
+                });
+            </script>
             </div>
         </div>
     </div>

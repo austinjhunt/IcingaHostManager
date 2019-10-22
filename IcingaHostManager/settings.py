@@ -105,8 +105,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'IcingaHostManager.wsgi.application'
 
-# Variables that differ between the Test and Prod versio
-
+# Variables that differ between the Test and Prod version
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -114,15 +113,16 @@ WSGI_APPLICATION = 'IcingaHostManager.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'xxx',
+        'NAME': 'dd',
         'USER': 'xxx',
         'PASSWORD': 'xxx',
-        'HOST': xxx,
-        'PORT': 'xxx'
+        'HOST': xx,
+        'PORT': '3306'
 
     }
 
 }
+
 
 
 # Password validation

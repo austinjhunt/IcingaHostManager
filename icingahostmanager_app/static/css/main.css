@@ -10,6 +10,53 @@ table.dataTable thead .sorting_desc_disabled:after,
 table.dataTable thead .sorting_desc_disabled:before {
   bottom: .5em;
 }
+#edithostscontainer{
+  overflow:auto;
+}
+#edithostmodal{
+  text-align:right;
+  margin:20px auto;
+  width:100% !important;
+  background-color:transparent;
+}
+#edithostmodal-dialog{
+  max-width: 60%;
+  width:60%;
+}
+#edithostmodal input{
+  font-size:1em;
+  text-align:center;
+  padding:6px;
+  margin-bottom:10px;
+  width:50%;
+}
+.showfailed{
+  color:white;
+  background-color:#540000;
+}
+.showfailed:after{
+  content: "Show Failed Hosts";
+}
+.showsuccess{
+  color:white;
+  background-color:darkcyan;
+}
+.showsuccess:after{
+  content: "Show Successful Hosts"
+}
+.toggle-vis{
+  border: 1px solid black;
+  border-radius:6px;
+  color:white !important;
+  background-color:#540000;
+  padding:8px;
+  margin:3px;
+  display:inline-block !important;
+}
+.toggle-vis-off{
+  color:#540000 !important;
+  background-color:white;
+}
 
 /* Table mods */
 .containers_container{

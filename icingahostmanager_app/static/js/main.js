@@ -26,7 +26,60 @@ $(document).ready(function () {
         $(this).toggleClass('selected');
     } );
 
+
+    $('#edithoststable tbody').on( 'click', 'tr', function () {
+        $(this).toggleClass('selected');
+        console.log($(this).hasClass('selected'));
+        $($(this).siblings()).each(function(i,row){
+            $(row).removeClass('selected');
+        });
+    } );
 });
+
+const TOTALNUMFIELDS = 16;
+
+function showedithostmodal(){
+    var hostid = $("#edithoststable tbody tr.selected").attr('id');
+    $("#host_id").val(hostid);
+    var value_array = [];
+    $("#edithoststable tbody tr.selected td").each(function(i,cell){
+        value_array.push($(cell).html());
+    });
+
+    $("#edithostmodal input[type!='hidden']").each(function(i, inputfield){
+        var val = value_array[i];
+        if (val === "True" || val === "False"){
+            $(inputfield).attr('type','checkbox');
+            if (val == "True"){
+                $(inputfield).prop('checked',true);
+            } else{
+                $(inputfield).prop('checked',false);
+            }
+        }
+       $(inputfield).val(value_array[i]);
+    });
+    $("#edithostmodal").modal('show');
+    for (var i = 0 ; i < TOTALNUMFIELDS; i ++){ // TOTALNUMFIELDS fields total
+        if (i >= 6){
+            var column = edithoststable.column(i);
+             column.visible(false);
+        }
+    }
+
+
+}
+function modal_prep_work(_callback){
+    // enable all columns so no values are missed first.
+    // for each column
+    console.log(edithoststable);
+    for (var i = 0; i < TOTALNUMFIELDS; i ++){
+        var column = edithoststable.column(i);
+        column.visible(true);
+    }
+
+    // after doing above, now execute callback
+    _callback();
+}
 
 
 // add replaceAll func to String object to remove all occurences of specific text (e.g. removing strings from textarea
@@ -54,3 +107,10 @@ function openaddhostform(){
     $("#singlehostformcontainer").fadeIn();
     $("#bulkuploadformcontainer").fadeOut();
 }
+
+function toggleconfirmpage(btn){
+    $("#successfulhosts").toggle('slow');
+    $("#failedhosts").toggle('slow');
+    $(btn).toggleClass("showfailed showsuccess");
+}
+
