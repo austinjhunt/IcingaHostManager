@@ -29,49 +29,123 @@ $(document).ready(function () {
 
     $('#edithoststable tbody').on( 'click', 'tr', function () {
         $(this).toggleClass('selected');
+        /* Allow multiple selection.
         console.log($(this).hasClass('selected'));
+
         $($(this).siblings()).each(function(i,row){
             $(row).removeClass('selected');
-        });
+        });*/
     } );
 });
 
 const TOTALNUMFIELDS = 16;
 
 function showedithostmodal(){
-    var hostid = $("#edithoststable tbody tr.selected").attr('id');
-    $("#host_id").val(hostid);
-    var value_array = [];
-    $("#edithoststable tbody tr.selected td").each(function(i,cell){
-        value_array.push($(cell).html());
-    });
-
-    $("#edithostmodal input[type!='hidden']").each(function(i, inputfield){
-        var val = value_array[i];
-        if (val === "True" || val === "False"){
-            $(inputfield).attr('type','checkbox');
-            if (val == "True"){
-                $(inputfield).prop('checked',true);
-            } else{
-                $(inputfield).prop('checked',false);
-            }
-        }
-       $(inputfield).val(value_array[i]);
+    $("#edithostsmodal_table_body").empty();
+    // for each host, get the properties to fill the table in the modal.
+    $("#edithoststable tbody tr.selected").each(function(index,hostrow){
+        var rowcopy = $(hostrow).clone().prop('id','edithostsmodal_host_id_' + $(hostrow).attr('id'));
+        $($(rowcopy).children()).each(function(i,c){
+            $(c).prop('contenteditable','true');
+        });
+        $("#edithostsmodal_table_body").append(rowcopy);
     });
     $("#edithostmodal").modal('show');
+    /* Return original table to simpler view, don't show every column; */
     for (var i = 0 ; i < TOTALNUMFIELDS; i ++){ // TOTALNUMFIELDS fields total
         if (i >= 6){
             var column = edithoststable.column(i);
              column.visible(false);
         }
     }
+}
 
+function edit_hosts(){
+    // create json dict of host id : { k : val, k: val...}
+    var hosts = {};
+    var hostid;
+    var fields = [];
+    $("#edithostsmodal_table thead th").each(function(i,heading){
+        fields.push($(heading).html())
+    });
 
+    $("#edithostsmodal_table_body tr").each(function(index, row){
+        hostid = $(row).attr('id');
+        hosts[hostid]= {};
+        $($(row).children()).each(function(i,cell){
+            hosts[hostid][fields[i]] = $(cell).html();
+        });
+    });
+    console.log(hosts);
+    $.ajax({
+        url: "/edit_hosts/",
+        type: "POST",
+        data: {
+            'hosts': JSON.stringify(hosts),
+        },
+        dataType: 'json',
+        success: function(data){
+            if (data['res'] == 'success')
+                $("#edithostmodal .modal-body").html("<h4 style='color:green'>Your hosts were edited successfully!</h4>");
+            else
+                $("#edithostmodal .modal-body").html("<h4 style='color:red'>Edits were not successful.</h4>");
+            setTimeout(function(){
+                    window.location.href = "/";
+            }, 2000);
+
+        }
+    });
+}
+function showdeletehostmodal(){
+    $("#deletehostsmodal_table_body").empty();
+    $("#edithoststable tbody tr.selected").each(function(index,hostrow){
+       var rowcopy = $(hostrow).clone().prop('id','deletehostsmodal_host_id_' + $(hostrow).attr('id'));
+       $("#deletehostsmodal_table_body").append(rowcopy);
+    });
+    $("#deletehostmodal").modal('show');
+    for (var i = 0 ; i < TOTALNUMFIELDS; i ++){ // TOTALNUMFIELDS fields total
+        if (i >= 6){
+            var column = edithoststable.column(i);
+             column.visible(false);
+        }
+    }
+}
+function delete_hosts(){
+    // create json dict of host id : { k : val, k: val...}
+    var hosts_to_delete = [];
+    var hostid;
+    $("#deletehostsmodal_table_body tr").each(function(index, row){
+        hostid = $(row).attr('id');
+        hosts_to_delete.push(hostid);
+    });
+    console.log(hosts_to_delete);
+    $.ajax({
+        url: "/delete_hosts/",
+        type: "POST",
+        data: {
+            'hosts_to_delete': JSON.stringify(hosts_to_delete),
+        },
+        dataType: 'json',
+        success: function(data){
+            if (data['res'] == 'success')
+                $("#deletehostmodal .modal-body").html("<h4 style='color:green'>Your hosts were deleted successfully!</h4>");
+            else
+                $("#deletehostmodal .modal-body").html("<h4 style='color:red'>Deletions were not successful.</h4>");
+            setTimeout(function(){
+                    window.location.href = "/";
+            }, 2000);
+
+        }
+    });
 }
 function modal_prep_work(_callback){
     // enable all columns so no values are missed first.
     // for each column
-    console.log(edithoststable);
+
+    if ($(".dataTable tr.selected").length == 0) {
+        alert("You need to select at least one host first!")
+        return;
+    }
     for (var i = 0; i < TOTALNUMFIELDS; i ++){
         var column = edithoststable.column(i);
         column.visible(true);
@@ -80,7 +154,6 @@ function modal_prep_work(_callback){
     // after doing above, now execute callback
     _callback();
 }
-
 
 // add replaceAll func to String object to remove all occurences of specific text (e.g. removing strings from textarea
 (function() {
@@ -113,4 +186,3 @@ function toggleconfirmpage(btn){
     $("#failedhosts").toggle('slow');
     $(btn).toggleClass("showfailed showsuccess");
 }
-

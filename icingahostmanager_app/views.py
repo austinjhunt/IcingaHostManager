@@ -16,7 +16,7 @@ from .models import *
 from .forms import *
 import json
 # DRY Utility Functions
-import os,fnmatch,csv,io
+import os,fnmatch,csv,io, socket
 
 from ipaddress import ip_address,ip_network
 
@@ -45,6 +45,9 @@ def render_to_json_response(context, **response_kwargs):
     return HttpResponse(data, **response_kwargs)
 
 
+MODAL_FIELDS = ['name', 'address', 'state', 'notes','num_cpus','os','env', 'network_zone', 'checks_to_execute', 'datacenter',
+                        'cluster', 'process_names','disable_notifications',  'disable_wmi', 'disable_ssh', 'http_vhosts']
+
 # When user requests page, immediately invoke the microsoft authentication
 # That will return with a POST to the successful_login(request) function.
 # Only then, direct them to / where index will be called with request.user.is_authenticated being true.
@@ -72,8 +75,7 @@ def index(request):
     request.session['failed_newhosts'] = []
 
     context = {'page': 'index',
-               'modal_fields': ['Name', 'Address', 'State', 'Notes','Num_CPUs','OS','Env', 'Zone', 'Checks', 'Datacenter',
-                        'Cluster', 'Process Names','Disable Notifications',  'Disable WMI', 'Disable SSH', 'VHosts']}
+               'modal_fields': MODAL_FIELDS}
     # Need to provide available field names for anyone who wants to upload a csv of hosts
     available_fields = [
         AF("name", "Name of the host", 1),
@@ -98,11 +100,10 @@ def index(request):
     context['existing_hosts'] = Host.objects.all()
     # Merge the available checks from nagios path and customscriptspath
     try:
-        # available_checks = [f for f in os.listdir("/usr/local/nagios/libexec/") if fnmatch.fnmatch(f,"check*") or fnmatch.fnmatch(f,"is_proc*")] + \
-         #   [f for f in os.listdir("/etc/icinga2/scripts/custom_checks/") if fnmatch.fnmatch(f,"check*")]
-        # context['available_checks'] = available_checks
-        test_available_checks = [f for f in os.listdir("/Users/austinhunt/Desktop/")]
-        context['available_checks'] = test_available_checks
+        available_checks = [f for f in os.listdir("/usr/local/nagios/libexec/") if fnmatch.fnmatch(f,"check*") or fnmatch.fnmatch(f,"is_proc*")] + \
+                           [f for f in os.listdir("/etc/icinga2/scripts/custom_checks/") if fnmatch.fnmatch(f,"check*")]
+
+        context['available_checks'] = available_checks
     except Exception as e:
         print(e)
         pass
@@ -279,11 +280,110 @@ def submit_successful_hosts(request):
         print(e)
     return HttpResponseRedirect("/")
 @csrf_exempt
-def edit_host(request):
+def edit_hosts(request):
     if request.method == "POST": # process
-        id = request.POST.get('host_id')
-        for k in request.POST.keys()[1:]:
-            print(k)
+        try:
+            hosts = request.POST.get('hosts',None)
+            hosts = json.loads(hosts)
+            print(hosts)
+            for k in hosts:
+                print("K = ",k)
+                host_id = k.split("edithostsmodal_host_id_")[-1]
+                print("Host id:",host_id)
+                host = Host.objects.get(id=host_id)
+                print(hosts[k])
+                for k2 in hosts[k]:
+                    print("Setting",k2,"to",hosts[k][k2])
+                    setattr(host,k2, hosts[k][k2])
+                host.save()
+
+
+            data = {'res':'success'}
+        except Exception as e:
+            data = {'res':'fail','e':str(e)}
+        return render_to_json_response(data)
+@csrf_exempt
+def delete_hosts(request):
+    if request.method == "POST":
+        try:
+            print(request.POST)
+            hostids_to_delete = json.loads(request.POST.get('hosts_to_delete'))
+            for parseid in hostids_to_delete:
+                id = parseid.split("deletehostsmodal_host_id_")[-1]
+                Host.objects.get(id=id).delete()
+
+            data = {'res':'success'}
+        except:
+            data = {'res':'fail'}
+
+        return render_to_json_response(data)
+
+
+
+
+@csrf_exempt
+def filter_hosts_by_ip(request):
+    if request.method == "POST":
+        range_subnet = request.POST.get('range')
+        ip_range = False
+        subnet = False
+        if "-" in range_subnet:
+            begin = range_subnet.split("-")[0].strip()
+            end = range_subnet.split("-")[-1].strip()
+            ip_range = (begin,end)
+            print("Ip range:",ip_range)
+        elif "/" in range_subnet:
+            subnet = ip_network(range_subnet.strip())
+            print("Subnet:",subnet)
+        # Get all hosts
+        hosts = Host.objects.all()
+        hostsinrange = []
+        template = loader.get_template('hostmanager.html')
+        try:
+            for h in hosts:
+                if isvalidIP(h.address.strip()):
+                    addr = h.address.strip()
+                    # Check if in range/subnet
+                    if ip_range:
+                        addr_in_ip_range = check_ipv4_in(addr,*ip_range)
+                        if addr_in_ip_range:
+                            print("Host",addr,"in IP range",ip_range)
+                            hostsinrange.append(h)
+                    elif subnet:
+                        addr_in_subnet = ip_address(addr) in subnet
+                        if addr_in_subnet:
+                            hostsinrange.append(h)
+                            print("Host",addr,"in subnet",subnet)
+
+                else: # not a valid ip, but a hostname, get ip.
+                    print(h.address,"not a valid IP")
+                    try:
+                        addr = socket.gethostbyname(h.address)
+                        print("Address:",addr)
+                        # Check if in range/subnet
+                        if ip_range:
+                            addr_in_ip_range = check_ipv4_in(addr, *ip_range)
+                            if addr_in_ip_range:
+                                print("Host",h.address,"in IP range",ip_range)
+                                hostsinrange.append(h)
+                        elif subnet:
+                            addr_in_subnet = ip_address(addr) in subnet
+                            if addr_in_subnet:
+                                hostsinrange.append(h)
+                                print("Host", h.address, "in subnet", subnet)
+                    except:
+                        # Don't worry about this host
+                        continue
+            context = {'existing_hosts':hostsinrange, 'range':request.POST.get('range'),'modal_fields':MODAL_FIELDS}
+        except Exception as e:
+            print(e)
+            context = {'range':request.POST.get('range'),'existing_hosts': [],'modal_fields': MODAL_FIELDS}
+
+        return HttpResponse(template.render(context,request))
+        print(hostsinrange)
+
 
     else:
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect("/")
+
+

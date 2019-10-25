@@ -19,4 +19,7 @@ class Host(models.Model):
     disable_wmi = models.BooleanField(default=False)
     disable_ssh = models.BooleanField(default=False)
     http_vhosts = models.TextField(null=True)
+    check_command = models.CharField(max_length=60,default="hostalive",null=False)
+    #FIXME: add a zone input field
 
+    zone = models.CharField(max_length=10,default="IZ-A")

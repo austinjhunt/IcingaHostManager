@@ -13,13 +13,13 @@ table.dataTable thead .sorting_desc_disabled:before {
 #edithostscontainer{
   overflow:auto;
 }
-#edithostmodal{
+#edithostmodal, #deletehostmodal{
   text-align:right;
   margin:20px auto;
   width:100% !important;
   background-color:transparent;
 }
-#edithostmodal-dialog{
+#edithostmodal-dialog, #deletehostmodal-dialog{
   max-width: 60%;
   width:60%;
 }
