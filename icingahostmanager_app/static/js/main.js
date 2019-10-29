@@ -38,7 +38,7 @@ $(document).ready(function () {
     } );
 });
 
-const TOTALNUMFIELDS = 16;
+const TOTALNUMFIELDS = 17;
 
 function showedithostmodal(){
     $("#edithostsmodal_table_body").empty();

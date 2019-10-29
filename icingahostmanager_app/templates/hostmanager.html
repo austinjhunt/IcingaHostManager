@@ -362,6 +362,11 @@
                         <input id="hostdisable_wmi" value="1" style="width:fit-content;font-size:1.5em; margin-bottom:10px;" type="checkbox" name="hostdisable_wmi">
                         <span class="help-block"><strong>Check to disable WMI checks for this host (only affects Windows hosts)</strong></span>
                     </div>
+                    <div class="inputcontainer">
+                        <input type="hidden" value="0" name="hostncpa">
+                        <input id="hostncpa" value="1" style="width:fit-content;font-size:1.5em; margin-bottom:10px;" type="checkbox" name="hostncpa">
+                        <span class="help-block"><strong>Check to enable NCPA (agent-based) checks</strong></span>
+                    </div>
 
                     <!-- hidden textarea for maintaining a list of checks to execute to include in post request -->
                     <div style="display:none">
@@ -495,6 +500,7 @@
                 <a class="toggle-vis toggle-vis-off" data-column="13">Disable WMI</a>
                 <a class="toggle-vis toggle-vis-off" data-column="14">Disable SSH</a>
                 <a class="toggle-vis toggle-vis-off" data-column="15">VHosts</a>
+                <a class="toggle-vis toggle-vis-off" data-column="16">Use NCPA</a>
             </div>
                 <button onclick="modal_prep_work(() => showedithostmodal())" class="btn btn-lg" style="color:white;
                  background:#540000; float:left; margin:20px;">Edit Selected Host</button>
@@ -531,6 +537,7 @@
                         <th>Disable WMI</th>
                         <th>Disable SSH</th>
                         <th>VHosts</th>
+                        <th>Use NCPA</th>
                     </thead>
                     <tbody>
                     {% for h in existing_hosts %}
@@ -551,6 +558,7 @@
                             <td>{{ h.disable_wmi }}</td>
                             <td>{{ h.disable_ssh }}</td>
                             <td>{{ h.http_vhosts }}</td>
+                            <td>{{ h.ncpa }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -571,6 +579,7 @@
                         <th>Disable WMI</th>
                         <th>Disable SSH</th>
                         <th>VHosts</th>
+                        <th>Use NCPA</th>
                     </tfoot>
                 </table>
             <script>

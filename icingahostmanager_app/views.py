@@ -45,8 +45,16 @@ def render_to_json_response(context, **response_kwargs):
     return HttpResponse(data, **response_kwargs)
 
 
+# NOTE: When adding a new field for hosts, do the following:
+# Add to MODAL_FIELDS here
+# Add to available_fields list in index with description
+# Add a column to the edit hosts table in hostmanager.html
+# Increment the TOTALNUMFIELDS variable in main.js
+# Recompress
+# Add an input field for this field to the add single host form with input name prefixed by 'host'
+
 MODAL_FIELDS = ['name', 'address', 'state', 'notes','num_cpus','os','env', 'network_zone', 'checks_to_execute', 'datacenter',
-                        'cluster', 'process_names','disable_notifications',  'disable_wmi', 'disable_ssh', 'http_vhosts']
+                        'cluster', 'process_names','disable_notifications',  'disable_wmi', 'disable_ssh', 'http_vhosts', 'ncpa']
 
 # When user requests page, immediately invoke the microsoft authentication
 # That will return with a POST to the successful_login(request) function.
@@ -93,7 +101,8 @@ def index(request):
         AF("disable_wmi", "Only matters for Windows machines, will not affect Linux; 0 or 1 representing whether or not to disable WMI checks for Host; if not included, notifications will be enabled",0),
         AF("disable_ssh", "Only matters for Linux machines, will not affect Windows; 0 or 1 representing whether or not to disable SSH-based checks on Host; if not included, notifications will be enabled",0),
         AF("datacenter", "Name of datacenter to which the Host belongs",0),
-        AF("cluster", "Name of cluster to which the Host belongs", 0)
+        AF("cluster", "Name of cluster to which the Host belongs", 0),
+        AF("ncpa", "Whether or not to use NCPA agent-based check", 0)
     ]
     context['available_fields'] = available_fields
 
