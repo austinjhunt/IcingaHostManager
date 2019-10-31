@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 from django.db.models import Q, Count
 from django.forms.models import model_to_dict
 from django.shortcuts import render
@@ -17,7 +16,6 @@ from .forms import *
 import json
 # DRY Utility Functions
 import os,fnmatch,csv,io, socket
-
 from ipaddress import ip_address,ip_network
 
 def isvalidIP(ip):
@@ -46,7 +44,7 @@ def render_to_json_response(context, **response_kwargs):
 
 
 # NOTE: When adding a new field for hosts, do the following:
-# Add to MODAL_FIELDS here
+# Add to MODAL_FIELDS in settings.
 # Add to available_fields list in index with description
 # Add a column to the edit hosts table in hostmanager.html
 # Increment the TOTALNUMFIELDS variable in main.js
