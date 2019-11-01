@@ -12,7 +12,6 @@ from random import *
 class Break_Nested_Loop(Exception): pass
 from django.template import loader
 from .models import *
-from .forms import *
 import json
 # DRY Utility Functions
 import os,fnmatch,csv,io, socket
@@ -44,14 +43,14 @@ def render_to_json_response(context, **response_kwargs):
 
 
 # NOTE: When adding a new field for hosts, do the following:
-# Add to MODAL_FIELDS in settings.
+# Add to FIELDS in settings.
 # Add to available_fields list in index with description
 # Add a column to the edit hosts table in hostmanager.html
 # Increment the TOTALNUMFIELDS variable in main.js
 # Recompress
 # Add an input field for this field to the add single host form with input name prefixed by 'host'
 
-MODAL_FIELDS = ['name', 'address', 'state', 'notes','num_cpus','os','env', 'network_zone', 'checks_to_execute', 'datacenter',
+FIELDS = ['name', 'address', 'state', 'notes','num_cpus','os','env', 'network_zone', 'checks_to_execute', 'datacenter',
                         'cluster', 'process_names','disable_notifications',  'disable_wmi', 'disable_ssh', 'http_vhosts', 'ncpa']
 
 # When user requests page, immediately invoke the microsoft authentication
@@ -81,7 +80,7 @@ def index(request):
     request.session['failed_newhosts'] = []
 
     context = {'page': 'index',
-               'modal_fields': MODAL_FIELDS}
+               'modal_fields': FIELDS}
     # Need to provide available field names for anyone who wants to upload a csv of hosts
     available_fields = [
         AF("name", "Name of the host", 1),
@@ -381,10 +380,10 @@ def filter_hosts_by_ip(request):
                     except:
                         # Don't worry about this host
                         continue
-            context = {'existing_hosts':hostsinrange, 'range':request.POST.get('range'),'modal_fields':MODAL_FIELDS}
+            context = {'existing_hosts':hostsinrange, 'range':request.POST.get('range'),'modal_fields':FIELDS}
         except Exception as e:
             print(e)
-            context = {'range':request.POST.get('range'),'existing_hosts': [],'modal_fields': MODAL_FIELDS}
+            context = {'range':request.POST.get('range'),'existing_hosts': [],'modal_fields': FIELDS}
 
         return HttpResponse(template.render(context,request))
         print(hostsinrange)
@@ -394,3 +393,28 @@ def filter_hosts_by_ip(request):
         return HttpResponseRedirect("/")
 
 
+@csrf_exempt
+def setup(request):
+    context = {}
+    t = loader.get_template("setup.html")
+    if request.method == "POST": # Post request
+        # Could be posting num_additional_fields
+        if request.POST.get('num_additional_fields',None) != None:
+            # toggle starting_setup to False
+            context['starting_setup'] = False
+            context['initialized'] = False
+            print("Not starting setup. Not initialized.")
+            return HttpResponse(t.render(context,request))
+    else: #Get request
+        #if len(Host.objects.all()) == 0:
+        if True: # for now, testing.
+            # Host database schema has not been set up.
+            context['initialized'] = False
+            context['starting_setup'] = True
+            print("Not initialized. Yes starting_setup.")
+            # Prompt them with initialization setup inputs
+        else:
+            context['initialized'] = True
+            # Offer a way of editing the Host table
+    template = loader.get_template("setup.html")
+    return HttpResponse(template.render(context,request))

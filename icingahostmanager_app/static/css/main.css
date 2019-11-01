@@ -63,7 +63,6 @@ table.dataTable thead .sorting_desc_disabled:before {
   width:75%;
   margin:5px auto;
   padding:5px;
-  margin:5px auto;
   border-radius:10px;
   border:1px solid grey;
 }
@@ -217,5 +216,20 @@ stay in line with CofC theme
   position:static;
   display:block;
   text-align:center;
+
+}
+
+/*Setup page */
+.setupinput_num_additional_fields{
+  font-size:1em !important;
+  padding:25px !important;
+  text-align:center !important;
+  margin:10px !important;
+}
+.setupinput{
+  font-size:1em !important;
+  padding:15px !important;
+  text-align:center !important;
+  margin:10px !important;
 
 }

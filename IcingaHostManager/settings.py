@@ -50,6 +50,9 @@ INSTALLED_APPS = [
     # for localhost HTTPS testing
     'django_extensions',
 
+    # for dynamic model modifications via front-end
+    'dynamic_models',
+
     # My app
     'icingahostmanager_app',
 ]
@@ -178,19 +181,20 @@ STATICFILES_FINDERS = (
 
 # Allow users to modify the entirety of backend logic and front end interfaces using this single configuration file
 
-# MODAL FIELDS will determine
+# FIELDS will determine
 # 1) Which fields are shown in the
 #   a) Available fields table when uploading a csv, where each field has a description,
 #   b) Single host upload form -> for this, an input type must be specified for the field (text/checkbox/dropdown; if
 #  dropdown, what are the options?)
 #   c) as a column in the edithosts table on the front end, where every column needs a corresponding toggle button.
 # 2) the JS variable TOTALNUMFIELDS. initial page load triggers an ajax request in main.js that pulls the len(
-# MODAL_FIELDS) and  assigns value to JS variable
+# FIELDS) and  assigns value to JS variable
 # 3) Most importantly, the attributes of the Host model. How does this work?
-# Host model definition -> loop through MODAL_FIELDS, create an attribute, pull a corresponding value, where value
+# Host model definition -> loop through FIELDS, create an attribute, pull a corresponding value, where value
 # requires:
 #   i) Field type (Char, Text, Boolean, Integer)
 #   ii) null Boolean (allow null values or no?)
 #   iii) default value
 # FIXME: modal fields currently at 17, missing 3, model for Host has 20 attributes
-MODAL_FIELDS = CONFIG_MODAL_FIELDS
+FIELDS = CONFIG_FIELDS
+TOTAL_NUM_FIELDS = CONFIG_FIELDS

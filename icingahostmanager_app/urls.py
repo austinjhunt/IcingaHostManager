@@ -11,6 +11,6 @@ urlpatterns = [
     url(r'^edit_hosts/',views.edit_hosts),
     url(r'^delete_hosts/',views.delete_hosts),
     url(r'^submit_successful_hosts/', views.submit_successful_hosts),
-    url(r'^filter_hosts_by_ip',views.filter_hosts_by_ip),
+    url(r'^setup/',views.setup),
     url(r'^logout/$',views.ihm_logout),
 ]
