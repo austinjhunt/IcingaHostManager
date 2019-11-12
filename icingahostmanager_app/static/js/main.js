@@ -186,3 +186,38 @@ function toggleconfirmpage(btn){
     $("#failedhosts").toggle('slow');
     $(btn).toggleClass("showfailed showsuccess");
 }
+function toggle_notifications_all(dir){
+    $("#notification_toggle_dir").html(dir); 
+    var cap = dir.charAt(0).toUpperCase() + dir.slice(1); 
+    $("#notification_toggle_confirm_modal .modal-title").html(cap + " Notifications for All Hosts");
+    $("#notification_toggle_confirm_modal .modal-body").html("Are you sure you want to " + dir + " notifications for all hosts monitored by Icinga?");
+    $("#notification_toggle_confirm_modal").modal('show'); 
+}   
+function confirm_notification_toggle(dir){
+    console.log(dir); 
+    $.ajax({
+        url: "/toggle_notifications_all_hosts/",
+        type: "POST",
+        data: {
+            'dir': dir,
+        },
+        dataType: 'json',
+        success: function(data){
+            var c;
+            if (dir === "disable"){
+                c = "red";
+            }
+            else {
+                c = "green";
+            }
+            if (data['res'] == 'success')
+                $("#notification_toggle_confirm_modal .modal-body").html("<h4 style='color:" + c + "'>Notifications successfully " + dir + "d.</h4>");
+            else
+                $("#notification_toggle_confirm_modal .modal-body").html("<h4 style='color:red'>Notification updates failed.</h4>");
+            setTimeout(function(){
+                    window.location.href = "/";
+            }, 2000);
+
+        }
+    });
+}

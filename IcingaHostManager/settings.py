@@ -106,6 +106,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'IcingaHostManager.wsgi.application'
 
 # Variables that differ between the Test and Prod version
+TEST_DATABASE_HOST = "rt-icinga-db.guest.vm.cougars.int"
 TEST_MA_REDIRECT_URI = "http://rt-icinga-m01.guest.vm.cougars.int/icingaweb2/successfullogin",
 
 
@@ -115,11 +116,11 @@ TEST_MA_REDIRECT_URI = "http://rt-icinga-m01.guest.vm.cougars.int/icingaweb2/suc
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': 
-        'PORT': ''
+        'NAME': 'icinga_hostmanager_db',
+        'USER': 'hostmanager',
+        'PASSWORD': 'p1g$1n4bl4nk3t',
+        'HOST': TEST_DATABASE_HOST,
+        'PORT': '3306'
 
     }
 

@@ -142,7 +142,14 @@
             <div>
                 <h5 style="color:green">Successfully created hosts:</h5>
                 <strong>Toggle Visibility: </strong>
-                <a class="toggle-vis" data-column="0">Name</a>
+                {% for c in successfulcolumns %}
+                    {% if forloop.counter0 > 8 %}
+                        <a class="toggle-vis toggle-vis-off" data-column="{{forloop.counter0}}">{{c}}</a>
+                    {% else %}
+                        <a class="toggle-vis" data-column="{{forloop.counter0}}">{{c}}</a>
+                    {% endif %}
+                {% endfor %}
+                <!--<a class="toggle-vis" data-column="0">Name</a>
                 <a class="toggle-vis" data-column="1">Address</a>
                 <a class="toggle-vis" data-column="2">State</a>
                 <a class="toggle-vis" data-column="3">Notes</a>
@@ -157,66 +164,28 @@
                 <a class="toggle-vis toggle-vis-off" data-column="12">Disable SSH</a>
                 <a class="toggle-vis toggle-vis-off" data-column="13">VHosts</a>
                 <a class="toggle-vis toggle-vis-off" data-column="14">Datacenter</a>
-                <a class="toggle-vis toggle-vis-off" data-column="15">Cluster</a>
+                <a class="toggle-vis toggle-vis-off" data-column="15">Cluster</a>--> 
             </div>
             <table id="successfulhostinfotable" class="table table-bordered table-sm" cellspacing="0" width="100%">
                 <thead>
-                <th>Name</th>
-                <th>Address</th>
-                <th>State</th>
-                <th>Notes</th>
-                <th>&#35; CPUs</th>
-                <th>Env</th>
-                <th>Zone</th>
-                <th>OS</th>
-                <th>Checks</th>
-                <th>Process Names</th>
-                <th>Disable Notifications</th>
-                <th>Disable WMI</th>
-                <th>Disable SSH</th>
-                <th>VHosts</th>
-                <th>Datacenter</th>
-                <th>Cluster</th>
+                    <!-- dynamically load columns -->
+                    {% for c in successfulcolumns %}
+                        <th>{{c}}</th>
+                    {% endfor %}
                 </thead>
                 <tbody>
-                {% for h in successfulhostinfo %}
+                {% for host in successfulhostinfo %}
                     <tr>
-                        <td>{{ h.name }}</td>
-                        <td>{{ h.address }}</td>
-                        <td>{{ h.state }}</td>
-                        <td>{{ h.notes }}</td>
-                        <td>{{ h.num_cpus }}</td>
-                        <td>{{ h.env }}</td>
-                        <td>{{ h.network_zone }}</td>
-                        <td>{{ h.os }}</td>
-                        <td>{{ h.checks_to_execute }}</td>
-                        <td>{{ h.process_names }}</td>
-                        <td>{{ h.disable_notifications }}</td>
-                        <td>{{ h.disable_wmi }}</td>
-                        <td>{{ h.disable_ssh }}</td>
-                        <td>{{ h.http_vhosts }}</td>
-                        <td>{{ h.datacenter }}</td>
-                        <td>{{ h.cluster }}</td>
+                    {% for key,value in host.items %}
+                        <td>{{value}}</td>
+                    {% endfor %}
                     </tr>
                 {% endfor %}
                 </tbody>
                 <tfoot>
-                <th>Name</th>
-                <th>Address</th>
-                <th>State</th>
-                <th>Notes</th>
-                <th>&#35; CPUs</th>
-                <th>Env</th>
-                <th>Zone</th>
-                <th>OS</th>
-                <th>Checks</th>
-                <th>Process Names</th>
-                <th>Disable Notifications</th>
-                <th>Disable WMI</th>
-                <th>Disable SSH</th>
-                <th>VHosts</th>
-                <th>Datacenter</th>
-                <th>Cluster</th>
+                    {% for c in successfulcolumns %}
+                        <th>{{c}}</th>
+                    {% endfor %}
                 </tfoot>
                 </thead>
             </table>
@@ -244,6 +213,7 @@
             </script>
         {% else %}
             <h5 style="color:red">No hosts were created successfully.</h5>
+            {{exception}}
         {% endif %}
     </div>
     <div style="display:none" id="failedhosts">
@@ -254,85 +224,35 @@
                 <h5 style="color:red;">Failed to create the following hosts due to errors. Please ensure the fields
                 you provide correspond correctly to the CSV columns.</h5>
                 <strong>Toggle Visibility: </strong>
-                <a class="toggle-vis" data-column="0">Name</a>
-                <a class="toggle-vis" data-column="1">Address</a>
-                <a class="toggle-vis" data-column="2">State</a>
-                <a class="toggle-vis" data-column="3">Notes</a>
-                <a class="toggle-vis" data-column="4">&#35; CPUs</a>
-                <a class="toggle-vis" data-column="5">Env</a>
-                <a class="toggle-vis" data-column="6">Zone</a>
-                <a class="toggle-vis" data-column="7">OS</a>
-                <a class="toggle-vis" data-column="8">Checks</a>
-                <a class="toggle-vis toggle-vis-off" data-column="9">Process Names</a>
-                <a class="toggle-vis toggle-vis-off" data-column="10">Disable Notifications</a>
-                <a class="toggle-vis toggle-vis-off" data-column="11">Disable WMI</a>
-                <a class="toggle-vis toggle-vis-off" data-column="12">Disable SSH</a>
-                <a class="toggle-vis toggle-vis-off" data-column="13">VHosts</a>
-                <a class="toggle-vis toggle-vis-off" data-column="14">Datacenter</a>
-                <a class="toggle-vis toggle-vis-off" data-column="15">Cluster</a>
-                <a class="toggle-vis toggle-vis-off" data-column="16">Error</a>
+                {% for c in failedcolumns %}
+                    {% if forloop.counter0 > 8 %}
+                        <a class="toggle-vis toggle-vis-off" data-column="{{forloop.counter0}}">{{c}}</a>
+                    {% else %}
+                        <a class="toggle-vis" data-column="{{forloop.counter0}}">{{c}}</a>
+                    {% endif %}
+                {% endfor %}
             </div>
             <table id="failedhostinfotable" class="table table-bordered table-sm" cellspacing="0" width="100%">
                 <thead>
-                <th>Name</th>
-                <th>Address</th>
-                <th>State</th>
-                <th>Notes</th>
-                <th>&#35; CPUs</th>
-                <th>Env</th>
-                <th>Zone</th>
-                <th>OS</th>
-                <th>Checks</th>
-                <th>Process Names</th>
-                <th>Disable Notifications</th>
-                <th>Disable WMI</th>
-                <th>Disable SSH</th>
-                <th>VHosts</th>
-                <th>Datacenter</th>
-                <th>Cluster</th>
-                <th>Error</th>
+                 <!-- dynamically load columns -->
+                 {% for c in failedcolumns %}
+                     <th>{{c}}</th>
+                {% endfor %}
                 </thead>
                 <tbody>
-                {% for h in failedhostinfo %}
+                {% for host in failedhostinfo %}
                     <tr>
-                        <td>{{ h.name }}</td>
-                        <td>{{ h.address }}</td>
-                        <td>{{ h.state }}</td>
-                        <td>{{ h.notes }}</td>
-                        <td>{{ h.num_cpus }}</td>
-                        <td>{{ h.env }}</td>
-                        <td>{{ h.network_zone }}</td>
-                        <td>{{ h.os }}</td>
-                        <td>{{ h.checks_to_execute }}</td>
-                        <td>{{ h.process_names }}</td>
-                        <td>{{ h.disable_notifications }}</td>
-                        <td>{{ h.disable_wmi }}</td>
-                        <td>{{ h.disable_ssh }}</td>
-                        <td>{{ h.http_vhosts }}</td>
-                        <td>{{ h.datacenter }}</td>
-                        <td>{{ h.cluster }}</td>
-                        <td>{{ h.error }}</td>
+                        {% for key,value in host.items %}
+                            <td>{{value}}</td>
+                        {% endfor %}
                     </tr>
                 {% endfor %}
                 </tbody>
                 <tfoot>
-                <th>Name</th>
-                <th>Address</th>
-                <th>State</th>
-                <th>Notes</th>
-                <th>&#35; CPUs</th>
-                <th>Env</th>
-                <th>Zone</th>
-                <th>OS</th>
-                <th>Checks</th>
-                <th>Process Names</th>
-                <th>Disable Notifications</th>
-                <th>Disable WMI</th>
-                <th>Disable SSH</th>
-                <th>VHosts</th>
-                <th>Datacenter</th>
-                <th>Cluster</th>
-                <th>Error</th>
+                <!-- dynamically load columns -->
+                {% for c in failedcolumns %}
+                    <th>{{c}}</th>
+                {% endfor %}
                 </tfoot>
                 </thead>
             </table>

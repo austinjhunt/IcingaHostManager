@@ -161,25 +161,30 @@ def addsinglehost(request):
                         postval = True if postval == "1" else False
                         setattr(host,hostattr,postval)
                     else: # not empty, not a boolean, just string value
+                        print(request.POST[k],EXCLUDE_IP_RANGE)
                         if hostattr == "checks_to_execute":
                             setattr(host,hostattr,request.POST[k][1:])
                         elif hostattr == "address" and not isvalidAddress(request.POST[k]):
                             raise InvalidIPException("Invalid address: " + request.POST[k])
-                        elif hostattr == "address" and isvalidIP(request.POST[k]) and check_ipv4_in(request.POST[k],EXCLUDE_IP_RANGE):
+                        elif hostattr == "address" and isvalidIP(request.POST[k]) and check_ipv4_in(request.POST[k],*EXCLUDE_IP_RANGE):
                             raise InvalidIPException("Address",request.POST[k],"within IP Exclusion range",EXCLUDE_IP_RANGE)
-                        elif hostattr == "address" and isvalidIP(request.POST[k]) and ip_address(request.POST[k]) in EXCLUDE_IP_RANGE2:
+                        elif hostattr == "address" and isvalidIP(request.POST[k]) and ip_address(request.POST[k]) in ip_network(EXCLUDE_IP_RANGE2):
                             raise InvalidIPException("Address", request.POST[k], "within IP Exclusion range",
                                                      EXCLUDE_IP_RANGE2)
                         else:
                             setattr(host,hostattr,request.POST[k])
 
             request.session['successful_newhosts'] = [json.dumps(host.__dict__)]
-            context = {'type': 'single success','successfulhostinfo':[host]}
+            columns = [el.capitalize() for el in host.__dict__.keys()]
+            context = {'type': 'single success','successfulhostinfo':[host.__dict__],'successfulcolumns':columns,'failedcolumns':columns}
+            print(host,columns)
         except Exception as e:
             print(e)
             setattr(host,"error",str(e))
             request.session['failed_newhosts'] = [json.dumps(host.__dict__)]
-            context = {'type': 'single fail', 'exception': str(e),'failedhostinfo': [host]}
+            columns = [el.capitalize() for el in host.__dict__.keys()]
+            print(host,columns)
+            context = {'type': 'single fail', 'exception': str(e),'failedhostinfo': [host.__dict__],'successfulcolumns':columns,'failedcolumns':columns}
         return HttpResponse(template.render(context,request))
     else: #only accept post requests
         return HttpResponseRedirect('/')
@@ -243,18 +248,23 @@ def bulkuploadhosts(request):
                     # Was this host created without problems?
                     if not successful_host:
                         setattr(newhost,"error","Invalid address: " + address)
-                        failed_newhosts.append(newhost)
+                        failed_newhosts.append(newhost.__dict__)
                     else:
-                        successful_newhosts.append(newhost)
+                        successful_newhosts.append(newhost.__dict__)
                 except Exception as e:
                     newhost.error = e
                     failed_newhosts.append(newhost)
-            request.session['successful_newhosts'] = [json.dumps(h.__dict__) for h in successful_newhosts]
-            request.session['failed_newhosts'] = [json.dumps(h.__dict__) for h in failed_newhosts]
+            request.session['successful_newhosts'] = [json.dumps(h) for h in successful_newhosts]
+            request.session['failed_newhosts'] = [json.dumps(h) for h in failed_newhosts]
+
+            successfulcolumns = [el.capitalize() for el in successful_newhosts[-1].keys()]
+            failedcolumns = [el.capitalize() for el in failed_newhosts[-1].keys()]
             context = {
                 'type': 'bulk success',
                 'successfulhostinfo':successful_newhosts,
                 'failedhostinfo':failed_newhosts,
+                'successfulcolumns': successfulcolumns,
+                'failedcolumns':failedcolumns
             }
         except Exception as e:
             context = {'type':'bulk fail','exception':str(e)}
@@ -279,11 +289,28 @@ def submit_successful_hosts(request):
                 checks = default_checks_to_execute
             else:
                 checks = default_checks_to_execute + h.get('checks_to_execute','')
-            record = Host(name=h.get('name',None),address=h.get('address',None),state=h.get('state',None),
-                          notes=h.get('notes',None),num_cpus=h.get('num_cpus',1),os=h.get('os',None),env=h.get('env',"Echo"),
-                          network_zone=h.get('network_zone',None),checks_to_execute=checks,datacenter=h.get('datacenter',None),
-                          cluster=h.get('cluster',None),process_names=h.get('process_names',None),disable_notifications=h.get('disable_notifications',False),
-                          disable_wmi=h.get('disable_wmi',False),disable_ssh=h.get('disable_ssh',False),http_vhosts=h.get('http_vhosts',None)).save()
+
+            # FIXME: make this more modular, don't want to have to add a field to this every time a new field is considered. e.g. ncpa
+            record = Host(name=h.get('name',None),
+                          address=h.get('address',None),
+                          state=h.get('state',None),
+                          notes=h.get('notes',None),
+                          num_cpus=h.get('num_cpus',1),
+                          os=h.get('os',None),
+                          env=h.get('env',"Echo"),
+                          network_zone=h.get('network_zone',None),
+                          checks_to_execute=checks,
+                          datacenter=h.get('datacenter',None),
+                          cluster=h.get('cluster',None),
+                          process_names=h.get('process_names',None),
+                          disable_notifications=h.get('disable_notifications',False),
+                          disable_wmi=h.get('disable_wmi',False),
+                          disable_ssh=h.get('disable_ssh',False),
+                          http_vhosts=h.get('http_vhosts',None),
+                          check_command=h.get('check_command','hostalive'),
+                          zone=h.get('zone',"IZ-A"),
+                          template_choice=h.get('template_choice',"DefaultHostTemplate"),
+                          ncpa=h.get('use_ncpa',False)).save()
 
     except Exception as e:
         print(e)
@@ -394,5 +421,8 @@ def filter_hosts_by_ip(request):
 
     else:
         return HttpResponseRedirect("/")
+
+@csrf_exempt
+def toggle_notifications_all_hosts(request):
 
 

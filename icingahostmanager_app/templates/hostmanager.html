@@ -53,6 +53,27 @@
 
 </head>
 
+<div id="notification_toggle_confirm_modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"></h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+      
+            <div class="modal-body">
+                  Are you sure you want to proceed? 
+            </div>
+            <p id="notification_toggle_dir" style="display: none;"></p>
+            <div class="modal-footer">
+              <button class="btn btn-primary" onclick="confirm_notification_toggle($('#notification_toggle_dir').html());">Confirm</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
 <div id="edithostmodal" class="modal" tabindex="-1" role="dialog">
   <div class="modal-dialog" id="edithostmodal-dialog" role="document">
@@ -482,6 +503,10 @@
             </div>
 
             <div id="edithostscontainer" class="tab-pane fade">
+                <div class="text-right">
+                <button class="btn btn-success" onclick="toggle_notifications_all('enable');">Enable Notifications for All Hosts</button>
+                <button class="btn btn-danger" onclick="toggle_notifications_all('disable');">Disable Notifications for All Hosts</button>
+                </div>
             <div>
                 <strong>Toggle Visibility: </strong>
                 <a class="toggle-vis" data-column="0">Name</a>
