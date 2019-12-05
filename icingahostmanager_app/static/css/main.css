@@ -23,7 +23,17 @@ table.dataTable thead .sorting_desc_disabled:before {
   max-width: 60%;
   width:60%;
 }
-
+.circle{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+}
+.green{
+  background:green;
+}
+.red{
+  background:red;
+}
 .modal{
   text-align:right !important;
   margin:20px auto !important;

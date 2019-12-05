@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from config import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -48,6 +49,9 @@ INSTALLED_APPS = [
 
     # for localhost HTTPS testing
     'django_extensions',
+
+    # for dynamic model modifications via front-end
+    'dynamic_models',
 
     # My app
     'icingahostmanager_app',
@@ -106,24 +110,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'IcingaHostManager.wsgi.application'
 
 # Variables that differ between the Test and Prod version
-TEST_DATABASE_HOST = "rt-icinga-db.guest.vm.cougars.int"
 TEST_MA_REDIRECT_URI = "http://rt-icinga-m01.guest.vm.cougars.int/icingaweb2/successfullogin",
 
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+# DEFINE constants in your config.py file
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'icinga_hostmanager_db',
-        'USER': 'hostmanager',
-        'PASSWORD': 'p1g$1n4bl4nk3t',
-        'HOST': TEST_DATABASE_HOST,
-        'PORT': '3306'
-
+        'NAME': DBNAME,
+        'USER': DBUSER,
+        'PASSWORD': DBPASSWORD,
+        'HOST': DBHOST,
+        'PORT': DBPORT
     }
-
 }
 
 
@@ -177,4 +179,30 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'compressor.finders.CompressorFinder',
+<<<<<<< HEAD
 )
+=======
+)
+
+
+
+# Allow users to modify the entirety of backend logic and front end interfaces using this single configuration file
+
+# FIELDS will determine
+# 1) Which fields are shown in the
+#   a) Available fields table when uploading a csv, where each field has a description,
+#   b) Single host upload form -> for this, an input type must be specified for the field (text/checkbox/dropdown; if
+#  dropdown, what are the options?)
+#   c) as a column in the edithosts table on the front end, where every column needs a corresponding toggle button.
+# 2) the JS variable TOTALNUMFIELDS. initial page load triggers an ajax request in main.js that pulls the len(
+# FIELDS) and  assigns value to JS variable
+# 3) Most importantly, the attributes of the Host model. How does this work?
+# Host model definition -> loop through FIELDS, create an attribute, pull a corresponding value, where value
+# requires:
+#   i) Field type (Char, Text, Boolean, Integer)
+#   ii) null Boolean (allow null values or no?)
+#   iii) default value
+# FIXME: modal fields currently at 17, missing 3, model for Host has 20 attributes
+FIELDS = CONFIG_FIELDS
+TOTAL_NUM_FIELDS = CONFIG_FIELDS
+>>>>>>> 33e83df960f7430b8525bf163f15ccea74f8def3

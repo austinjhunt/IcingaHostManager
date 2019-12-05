@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+import requests
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from django.db.models import Q, Count
 from django.forms.models import model_to_dict
 from django.shortcuts import render
@@ -53,7 +55,7 @@ def render_to_json_response(context, **response_kwargs):
 # Recompress
 # Add an input field for this field to the add single host form with input name prefixed by 'host'
 
-MODAL_FIELDS = ['name', 'address', 'state', 'notes','num_cpus','os','env', 'network_zone', 'checks_to_execute', 'datacenter',
+MODAL_FIELDS = ['status','name', 'address', 'state', 'notes','num_cpus','os','env', 'network_zone', 'checks_to_execute', 'datacenter',
                         'cluster', 'process_names','disable_notifications',  'disable_wmi', 'disable_ssh', 'http_vhosts', 'ncpa']
 
 # When user requests page, immediately invoke the microsoft authentication
@@ -106,7 +108,34 @@ def index(request):
     ]
     context['available_fields'] = available_fields
 
-    context['existing_hosts'] = Host.objects.all()
+    # For each of the hosts, make an API call to determine if that host is up or down. 
+    # If that host is down right now, it means that it's not been set up for monitoring, 
+    # so temporarily disble notifications only for those hosts. 
+    all_hosts = list(Host.objects.all())
+    headers = {'Accept': 'application/json',}
+    for h in all_hosts: 
+        n = h.name
+        # make API call to check status. 
+        params = (
+            ('host', n)
+        )
+        apicall = requests.get('https://rp-icinga-m01.guest.vm.cougars.int:5665/v1/objects/hosts?host={}'.format(n), 
+        headers=headers,verify=False, auth=('director', '1c1ng4d1r3ct0r'))
+        prettyapicall = json.loads(apicall.content)
+        try:
+            status = prettyapicall["results"][0]["attrs"]["last_check_result"]["exit_status"]
+            status = "up" if status == 0 else "down"
+            #if status == "down":
+            #    h.disable_notifications = True
+            #    h.save()
+            #elif status == "up": 
+            #    h.disable_notifications = False
+            #    h.save()
+            setattr(h, "status",status)
+        except: 
+            setattr(h, "status", "unknown")
+            continue 
+    context['existing_hosts'] = all_hosts
     # Merge the available checks from nagios path and customscriptspath
     try:
         available_checks = [f for f in os.listdir("/usr/local/nagios/libexec/") if fnmatch.fnmatch(f,"check*") or fnmatch.fnmatch(f,"is_proc*")] + \
@@ -329,8 +358,10 @@ def edit_hosts(request):
                 host = Host.objects.get(id=host_id)
                 print(hosts[k])
                 for k2 in hosts[k]:
-                    print("Setting",k2,"to",hosts[k][k2])
-                    setattr(host,k2, hosts[k][k2])
+                    # Don't store the status field, but store everything else. Status is dynamically loaded at runtime from Icinga API, not from static DB
+                    if k2 != "status":
+                        print("Setting",k2,"to",hosts[k][k2])
+                        setattr(host,k2, hosts[k][k2])
                 host.save()
 
 
@@ -424,5 +455,5 @@ def filter_hosts_by_ip(request):
 
 @csrf_exempt
 def toggle_notifications_all_hosts(request):
-
+    print("")
 
