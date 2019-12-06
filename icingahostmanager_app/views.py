@@ -415,5 +415,16 @@ def filter_hosts_by_ip(request):
 
 
 def toggle_notifications_all_hosts(request):
-    # print("")
+    if request.method == "POST": 
+        try: 
+            dir = request.POST.get('dir','on')
+            disable_notifications = 1 if dir == "disable" else 0
+            for h in Host.objects.all(): 
+                h.disable_notifications = disable_notifications
+                h.save()
+            res = "success"
+        except Exception as e: 
+            res = "Failed with exception: {}".format(e)
+        data = {"res": res}
+        return render_to_json_response(data)
 
