@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext, loader
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from random import *
+from IcingaHostManager.settings import *
 # Create your views here.
 class Break_Nested_Loop(Exception): pass
 from django.template import loader
@@ -47,23 +48,14 @@ def render_to_json_response(context, **response_kwargs):
     return HttpResponse(data, **response_kwargs)
 
 
-# NOTE: When adding a new field for hosts, do the following:
-# Add to MODAL_FIELDS here
-# Add to available_fields list in index with description
-# Add a column to the edit hosts table in hostmanager.html
-# Increment the TOTALNUMFIELDS variable in main.js
-# Recompress
-# Add an input field for this field to the add single host form with input name prefixed by 'host'
-
-MODAL_FIELDS = ['status','name', 'address', 'state', 'notes','num_cpus','os','env', 'network_zone', 'checks_to_execute', 'datacenter',
-                        'cluster', 'process_names','disable_notifications',  'disable_wmi', 'disable_ssh', 'http_vhosts', 'ncpa']
-
 # When user requests page, immediately invoke the microsoft authentication
 # That will return with a POST to the successful_login(request) function.
 # Only then, direct them to / where index will be called with request.user.is_authenticated being true.
 # Right now, the "Microsoft" button on the /admin/ page triggers the Microsoft auth. Instead of passing the
 # login url to the javascript, pass it to this file, and let index redirect to that url.
 
+# Available Field class
+# Instances shown in the Bulk Upload Hosts > Available Fields table; purpose is to show what fields can be included in a CSV upload
 class AF:
     def __init__(self,n,d,r):
         self.name = n
@@ -75,7 +67,7 @@ class HostObj:
             setattr(self,f,None)
 
 
-@csrf_exempt
+
 def index(request):
     # Dont need to handle authentication. All authentication will be handled by Icinga application.
     # Just serve the home page.
@@ -85,7 +77,7 @@ def index(request):
     request.session['failed_newhosts'] = []
 
     context = {'page': 'index',
-               'modal_fields': MODAL_FIELDS}
+               'modal_fields': FIELDS.keys()}
     # Need to provide available field names for anyone who wants to upload a csv of hosts
     available_fields = [
         AF("name", "Name of the host", 1),
@@ -106,35 +98,15 @@ def index(request):
         AF("cluster", "Name of cluster to which the Host belongs", 0),
         AF("ncpa", "Whether or not to use NCPA agent-based check", 0)
     ]
+    available_fields = [
+        AF(el,FIELDS[el]['description'],FIELDS[el]['required']) for el in FIELDS]
+    # print("Available fields: ", available_fields)
     context['available_fields'] = available_fields
 
     # For each of the hosts, make an API call to determine if that host is up or down. 
     # If that host is down right now, it means that it's not been set up for monitoring, 
     # so temporarily disble notifications only for those hosts. 
     all_hosts = list(Host.objects.all())
-    headers = {'Accept': 'application/json',}
-    for h in all_hosts: 
-        n = h.name
-        # make API call to check status. 
-        params = (
-            ('host', n)
-        )
-        apicall = requests.get('https://rp-icinga-m01.guest.vm.cougars.int:5665/v1/objects/hosts?host={}'.format(n), 
-        headers=headers,verify=False, auth=('director', '1c1ng4d1r3ct0r'))
-        prettyapicall = json.loads(apicall.content)
-        try:
-            status = prettyapicall["results"][0]["attrs"]["last_check_result"]["exit_status"]
-            status = "up" if status == 0 else "down"
-            #if status == "down":
-            #    h.disable_notifications = True
-            #    h.save()
-            #elif status == "up": 
-            #    h.disable_notifications = False
-            #    h.save()
-            setattr(h, "status",status)
-        except: 
-            setattr(h, "status", "unknown")
-            continue 
     context['existing_hosts'] = all_hosts
     # Merge the available checks from nagios path and customscriptspath
     try:
@@ -143,24 +115,15 @@ def index(request):
 
         context['available_checks'] = available_checks
     except Exception as e:
-        print(e)
+        # print(e)
         pass
 
     return HttpResponse(template.render(context,request))
-@csrf_exempt
+
 def ihm_logout(request):
     logout(request)
     #return HttpResponseRedirect("http://cofc.edu")
     return HttpResponseRedirect("https://login.microsoftonline.com/common/oauth2/logout")
-
-# From Daniel, Oct 22 2019, if within 10.7.69.125-144 range, do not include in Icinga Host objects
-# Check if in that range, add to failed_newhosts if true, specify why
-# Helper methods for checking if in IP range:
-# metatoaster on stackoverflow gives the following
-# Convert IP into tuples of integers through comprehension expression
-EXCLUDE_IP_RANGE = ('10.7.69.125','10.7.69.144')
-EXCLUDE_IP_RANGE2 = ip_network('10.131.10.0/23')
-
 
 def convert_ipv4(ip):
     return tuple(int(n) for n in ip.split('.'))
@@ -169,7 +132,7 @@ def convert_ipv4(ip):
 def check_ipv4_in(addr, start, end):
     return convert_ipv4(start) < convert_ipv4(addr) < convert_ipv4(end)
 
-@csrf_exempt
+
 def addsinglehost(request):
     if request.method == "POST":
         # Get form data
@@ -184,13 +147,11 @@ def addsinglehost(request):
                     postval = request.POST[k].strip()
                     # if POST value empty, set value to None for object
                     if postval == "":
-                        print("Setting",hostattr,"to None")
                         setattr(host,hostattr,None)
                     elif postval == "0" or postval == "1":
                         postval = True if postval == "1" else False
                         setattr(host,hostattr,postval)
                     else: # not empty, not a boolean, just string value
-                        print(request.POST[k],EXCLUDE_IP_RANGE)
                         if hostattr == "checks_to_execute":
                             setattr(host,hostattr,request.POST[k][1:])
                         elif hostattr == "address" and not isvalidAddress(request.POST[k]):
@@ -206,19 +167,19 @@ def addsinglehost(request):
             request.session['successful_newhosts'] = [json.dumps(host.__dict__)]
             columns = [el.capitalize() for el in host.__dict__.keys()]
             context = {'type': 'single success','successfulhostinfo':[host.__dict__],'successfulcolumns':columns,'failedcolumns':columns}
-            print(host,columns)
+            # print(host,columns)
         except Exception as e:
-            print(e)
+            # print(e)
             setattr(host,"error",str(e))
             request.session['failed_newhosts'] = [json.dumps(host.__dict__)]
             columns = [el.capitalize() for el in host.__dict__.keys()]
-            print(host,columns)
+            # print(host,columns)
             context = {'type': 'single fail', 'exception': str(e),'failedhostinfo': [host.__dict__],'successfulcolumns':columns,'failedcolumns':columns}
         return HttpResponse(template.render(context,request))
     else: #only accept post requests
         return HttpResponseRedirect('/')
 
-@csrf_exempt
+
 def bulkuploadhosts(request):
     if request.method == "POST": # handle processing\
         template = loader.get_template("confirmation.html")
@@ -247,7 +208,7 @@ def bulkuploadhosts(request):
                         value = l[index].strip()
                         # Dont process if empty input
                         if value == "":
-                            print(field, "is empty")
+                            # print(field, "is empty")
                             setattr(newhost, field, None)
 
                         # Is this address column?
@@ -269,7 +230,7 @@ def bulkuploadhosts(request):
                         # Specific handling for address; If this field is explicitly the address column or if this field is the name column to be used as address
                         if addresscolumn:
                             address = l[index]
-                            print("Setting host",field,"to ",address)
+                            # print("Setting host",field,"to ",address)
                             setattr(newhost,"address",address)
                             if not isvalidAddress(l[index]):
                                 successful_host = False
@@ -303,7 +264,7 @@ def bulkuploadhosts(request):
         return HttpResponseRedirect("/")
 
 
-@csrf_exempt
+
 def submit_successful_hosts(request):
     successful_hosts = request.session['successful_newhosts']
     # Each object in list is currently a JSON string. Need to use json.loads
@@ -311,8 +272,7 @@ def submit_successful_hosts(request):
     try:
         successful_hosts = [json.loads(s) for s in successful_hosts]
         for h in successful_hosts:
-            # create a Database record for this host.
-            print(h)
+            # create a Database record for this host.=
 
             if h.get('checks_to_execute','') is None:
                 checks = default_checks_to_execute
@@ -342,25 +302,25 @@ def submit_successful_hosts(request):
                           ncpa=h.get('use_ncpa',False)).save()
 
     except Exception as e:
-        print(e)
+        pass
     return HttpResponseRedirect("/")
-@csrf_exempt
+
 def edit_hosts(request):
     if request.method == "POST": # process
         try:
             hosts = request.POST.get('hosts',None)
             hosts = json.loads(hosts)
-            print(hosts)
+            # print(hosts)
             for k in hosts:
-                print("K = ",k)
+                # print("K = ",k)
                 host_id = k.split("edithostsmodal_host_id_")[-1]
-                print("Host id:",host_id)
+                # print("Host id:",host_id)
                 host = Host.objects.get(id=host_id)
-                print(hosts[k])
+                # print(hosts[k])
                 for k2 in hosts[k]:
                     # Don't store the status field, but store everything else. Status is dynamically loaded at runtime from Icinga API, not from static DB
                     if k2 != "status":
-                        print("Setting",k2,"to",hosts[k][k2])
+                        # print("Setting",k2,"to",hosts[k][k2])
                         setattr(host,k2, hosts[k][k2])
                 host.save()
 
@@ -369,11 +329,11 @@ def edit_hosts(request):
         except Exception as e:
             data = {'res':'fail','e':str(e)}
         return render_to_json_response(data)
-@csrf_exempt
+
 def delete_hosts(request):
     if request.method == "POST":
         try:
-            print(request.POST)
+            # print(request.POST)
             hostids_to_delete = json.loads(request.POST.get('hosts_to_delete'))
             for parseid in hostids_to_delete:
                 id = parseid.split("deletehostsmodal_host_id_")[-1]
@@ -388,7 +348,7 @@ def delete_hosts(request):
 
 
 
-@csrf_exempt
+
 def filter_hosts_by_ip(request):
     if request.method == "POST":
         range_subnet = request.POST.get('range')
@@ -398,10 +358,10 @@ def filter_hosts_by_ip(request):
             begin = range_subnet.split("-")[0].strip()
             end = range_subnet.split("-")[-1].strip()
             ip_range = (begin,end)
-            print("Ip range:",ip_range)
+            # print("Ip range:",ip_range)
         elif "/" in range_subnet:
             subnet = ip_network(range_subnet.strip())
-            print("Subnet:",subnet)
+            # print("Subnet:",subnet)
         # Get all hosts
         hosts = Host.objects.all()
         hostsinrange = []
@@ -414,46 +374,46 @@ def filter_hosts_by_ip(request):
                     if ip_range:
                         addr_in_ip_range = check_ipv4_in(addr,*ip_range)
                         if addr_in_ip_range:
-                            print("Host",addr,"in IP range",ip_range)
+                            # print("Host",addr,"in IP range",ip_range)
                             hostsinrange.append(h)
                     elif subnet:
                         addr_in_subnet = ip_address(addr) in subnet
                         if addr_in_subnet:
                             hostsinrange.append(h)
-                            print("Host",addr,"in subnet",subnet)
+                            # print("Host",addr,"in subnet",subnet)
 
                 else: # not a valid ip, but a hostname, get ip.
-                    print(h.address,"not a valid IP")
+                    # print(h.address,"not a valid IP")
                     try:
                         addr = socket.gethostbyname(h.address)
-                        print("Address:",addr)
+                        # print("Address:",addr)
                         # Check if in range/subnet
                         if ip_range:
                             addr_in_ip_range = check_ipv4_in(addr, *ip_range)
                             if addr_in_ip_range:
-                                print("Host",h.address,"in IP range",ip_range)
+                                # print("Host",h.address,"in IP range",ip_range)
                                 hostsinrange.append(h)
                         elif subnet:
                             addr_in_subnet = ip_address(addr) in subnet
                             if addr_in_subnet:
                                 hostsinrange.append(h)
-                                print("Host", h.address, "in subnet", subnet)
+                                # print("Host", h.address, "in subnet", subnet)
                     except:
                         # Don't worry about this host
                         continue
-            context = {'existing_hosts':hostsinrange, 'range':request.POST.get('range'),'modal_fields':MODAL_FIELDS}
+            context = {'existing_hosts':hostsinrange, 'range':request.POST.get('range'),'modal_fields':FIELDS.keys()}
         except Exception as e:
-            print(e)
-            context = {'range':request.POST.get('range'),'existing_hosts': [],'modal_fields': MODAL_FIELDS}
+            # print(e)
+            context = {'range':request.POST.get('range'),'existing_hosts': [],'modal_fields': FIELDS.keys()}
 
         return HttpResponse(template.render(context,request))
-        print(hostsinrange)
+        # print(hostsinrange)
 
 
     else:
         return HttpResponseRedirect("/")
 
-@csrf_exempt
+
 def toggle_notifications_all_hosts(request):
-    print("")
+    # print("")
 

@@ -20,7 +20,6 @@ class Host(models.Model):
     disable_ssh = models.BooleanField(default=False)
     http_vhosts = models.TextField(null=True)
     check_command = models.CharField(max_length=60,default="hostalive",null=False)
-
     #FIXME: add input fields for each of these
     zone = models.CharField(max_length=10,default="IZ-A")
     template_choice = models.CharField(max_length=60,default="DefaultHostTemplate")

@@ -77,7 +77,9 @@ function edit_hosts(){
         });
     });
     console.log(hosts);
+    var token = "{{ csrf_token }}";
     $.ajax({
+        headers: {"X-CSRFToken": token},
         url: "/edit_hosts/",
         type: "POST",
         data: {
@@ -118,8 +120,9 @@ function delete_hosts(){
         hostid = $(row).attr('id');
         hosts_to_delete.push(hostid);
     });
-    console.log(hosts_to_delete);
+    var token = "{{ csrf_token }}";
     $.ajax({
+        headers: {"X-CSRFToken": token},
         url: "/delete_hosts/",
         type: "POST",
         data: {
@@ -194,8 +197,9 @@ function toggle_notifications_all(dir){
     $("#notification_toggle_confirm_modal").modal('show'); 
 }   
 function confirm_notification_toggle(dir){
-    console.log(dir); 
+    var token = "{{ csrf_token }}";
     $.ajax({
+        headers: {"X-CSRFToken": token},
         url: "/toggle_notifications_all_hosts/",
         type: "POST",
         data: {

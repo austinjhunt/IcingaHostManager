@@ -1,0 +1,70 @@
+{
+    "name": {
+        "description": "Name of the host",
+        "required": 1
+    },
+    "address": {
+        "description": "Address of the host; could be the same as the host's name",
+        "required": 1
+    },
+    "os": {
+        "description": "Operating system",
+        "required": 1
+    },
+    "notes": {
+        "description": "Notes about host",
+        "required": 0
+    },
+    "network_zone": {
+        "description": "Which network zone does the host belong to? (e.g. Test, Production, Management, Development)",
+        "required": 0
+    },
+    "checks_to_execute": {
+        "description": "Comma-separated list of checks you wish to execute (shown in available checks table); be sure to wrap in double quotes",
+        "required": 1
+    },
+    "process_names": {
+        "description": "Names of processes you want to specifically check for if you include the is_process_running check in your checks_to_execute_field",
+        "required": 0
+    },
+    "http_vhosts": {
+        "description": "comma-separated list of virtual hosts running on the Host (e.g. the ServerName value of each VHost)",
+        "required": 0
+    },
+    "num_cpus": {
+        "description": "Number of CPUs on Host",
+        "required": 0
+    },
+    "state": {
+        "description": "Current state of Host (On/Off)",
+        "required": 1
+    },
+    "env": {
+        "description": "Environment in which Host lives (e.g. Echo, Drake, etc.)",
+        "required": 0
+    },
+    "disable_notifications": {
+        "description": "0 or 1 representing whether or not to disable notifications for this host; if not included, notifications will be enabled",
+        "required": 0
+    },
+    "disable_wmi": {
+        "description": "Only matters for Windows machines, will not affect Linux; 0 or 1 representing whether or not to disable WMI checks for Host; if not included, notifications will be enabled",
+        "required": 0
+    },
+    "disable_ssh": {
+        "description": "Only matters for Linux machines, will not affect Windows; 0 or 1 representing whether or not to disable SSH-based checks on Host; if not included, notifications will be enabled",
+        "required": 0
+    },
+    "datacenter": {
+        "description": "Name of datacenter to which the Host belongs",
+        "required": 0
+    },
+    "cluster": {
+        "description": "Name of cluster to which the Host belongs",
+        "required": 0
+    },
+    "ncpa": {
+        "description": "Whether or not to use NCPA agent-based check",
+        "required": 0
+    }
+}

@@ -10,8 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-import os
-from config import *
+import os, configparser,json
+
+config = configparser.ConfigParser()
+print(os.getcwd())
+config.readfp(open('config.ini'))
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -120,11 +123,11 @@ TEST_MA_REDIRECT_URI = "http://rt-icinga-m01.guest.vm.cougars.int/icingaweb2/suc
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': DBNAME,
-        'USER': DBUSER,
-        'PASSWORD': DBPASSWORD,
-        'HOST': DBHOST,
-        'PORT': DBPORT
+        'NAME': config['database'].get('DBNAME',''),
+        'USER': config['database'].get('DBUSER',''),
+        'PASSWORD': config['database'].get('DBPASSWORD',''),
+        'HOST': config['database'].get('DBHOST',''),
+        'PORT': config['database'].get('DBPORT',''),
     }
 }
 
@@ -179,9 +182,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'compressor.finders.CompressorFinder',
-<<<<<<< HEAD
-)
-=======
 )
 
 
@@ -203,6 +203,14 @@ STATICFILES_FINDERS = (
 #   ii) null Boolean (allow null values or no?)
 #   iii) default value
 # FIXME: modal fields currently at 17, missing 3, model for Host has 20 attributes
-FIELDS = CONFIG_FIELDS
-TOTAL_NUM_FIELDS = CONFIG_FIELDS
->>>>>>> 33e83df960f7430b8525bf163f15ccea74f8def3
+
+# API Settings
+ICINGA_MASTER_URL = config['api'].get('ICINGA_MASTER_URL','')
+ICINGA_API_USER = config['api'].get('ICINGA_API_USER','')
+ICINGA_API_PASSWORD = config['api'].get('ICINGA_API_PASSWORD','')
+
+# Get the host fields
+with open("fields.json") as fields:
+    data = json.load(fields)
+    FIELDS = data
+TOTAL_NUM_FIELDS = len(FIELDS)

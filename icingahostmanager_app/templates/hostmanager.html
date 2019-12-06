@@ -32,7 +32,8 @@
     <script>
         var page = "{{ page }}";
 
-        var status = "{{ status }}";
+        // no longer passing status 
+        //var status = "{{ status }}";
 
     </script>
     {% compress js %}
@@ -146,10 +147,6 @@
 <div id="whitebg"
      style="position:fixed;top:0;left:0;right:0;bottom:0; background:white;z-index:10;overflow:hidden;"></div>
 
-<script>
-    var page = "{{ page }}";
-    var status = "{{ status }}";
-</script>
 
 <ul id="access-nav">
     <li><a href="#bd-content" tabindex="1">Skip to Main Content</a></li>
@@ -293,6 +290,7 @@
         <div class="tab-content">
             <div id="singlehostformcontainer" class="tab-pane active">
                 <form class="hostmgmtform" method="post" id="singlehostform" action="/addsinglehost/">
+                    {% csrf_token %}
                     <div class="inputcontainer required">
                         <input id="hostname" name="hostname" type="text" placeholder="Host Name"
                                class="form-control input-md d-inline-block" required>
@@ -358,7 +356,7 @@
                     <div class="inputcontainer">
                         <input id="hostnumcpus" name="hostnum_cpus" type="number" placeholder="# CPUs"
                                class="form-control input-md">
-                        <span class="help-block">How many CPUs does host have? </span>
+                        <span class="help-block">How many cores does host have? </span>
                     </div>
                     <div class="inputcontainer">
                         <input id="hostdatacenter"class="form-control input-md" type="text" placeholder="Datacenter name" name="hostdatacenter">
@@ -431,6 +429,7 @@
             <div id="bulkuploadhostsformcontainer" class="tab-pane fade">
 
                 <form class="hostmgmtform" method="post" id="bulkuploadhostform" action="/bulkuploadhosts/" enctype="multipart/form-data">
+                    {% csrf_token %}
                     <div class="inputcontainer">
                         <input id="fields_ordered" name="fields_ordered" type="text" placeholder="Ordered Fields"
                                class="form-control input-md">
@@ -509,24 +508,23 @@
                 </div>
             <div>
                 <strong>Toggle Visibility: </strong>
-                <a class="toggle-vis" data-column="0">Status</a>
-                <a class="toggle-vis" data-column="1">Name</a>
-                <a class="toggle-vis" data-column="2">Address</a>
-                <a class="toggle-vis" data-column="3">State</a>
-                <a class="toggle-vis" data-column="4">Notes</a>
-                <a class="toggle-vis" data-column="5">&#35; CPUs</a>
-                <a class="toggle-vis" data-column="8">OS</a>
-                <a class="toggle-vis" data-column="6">Env</a>
-                <a class="toggle-vis" data-column="7">Zone</a>
-                <a class="toggle-vis" data-column="9">Checks</a>
-                <a class="toggle-vis toggle-vis-off" data-column="10">Datacenter</a>
-                <a class="toggle-vis toggle-vis-off" data-column="11">Cluster</a>
-                <a class="toggle-vis toggle-vis-off" data-column="12">Process Names</a>
-                <a class="toggle-vis toggle-vis-off" data-column="13">Disable Notifications</a>
-                <a class="toggle-vis toggle-vis-off" data-column="14">Disable WMI</a>
-                <a class="toggle-vis toggle-vis-off" data-column="15">Disable SSH</a>
-                <a class="toggle-vis toggle-vis-off" data-column="16">VHosts</a>
-                <a class="toggle-vis toggle-vis-off" data-column="17">Use NCPA</a>
+                <a class="toggle-vis" data-column="0">Name</a>
+                <a class="toggle-vis" data-column="1">Address</a>
+                <a class="toggle-vis" data-column="2">State</a>
+                <a class="toggle-vis" data-column="3">Notes</a>
+                <a class="toggle-vis" data-column="4">&#35; CPUs</a>
+                <a class="toggle-vis" data-column="7">OS</a>
+                <a class="toggle-vis" data-column="5">Env</a>
+                <a class="toggle-vis" data-column="6">Zone</a>
+                <a class="toggle-vis" data-column="8">Checks</a>
+                <a class="toggle-vis toggle-vis-off" data-column="9">Datacenter</a>
+                <a class="toggle-vis toggle-vis-off" data-column="10">Cluster</a>
+                <a class="toggle-vis toggle-vis-off" data-column="11">Process Names</a>
+                <a class="toggle-vis toggle-vis-off" data-column="12">Disable Notifications</a>
+                <a class="toggle-vis toggle-vis-off" data-column="13">Disable WMI</a>
+                <a class="toggle-vis toggle-vis-off" data-column="14">Disable SSH</a>
+                <a class="toggle-vis toggle-vis-off" data-column="15">VHosts</a>
+                <a class="toggle-vis toggle-vis-off" data-column="16">Use NCPA</a>
             </div>
                 <button onclick="modal_prep_work(() => showedithostmodal())" class="btn btn-lg" style="color:white;
                  background:#540000; float:left; margin:20px;">Edit Selected Host</button>
@@ -536,6 +534,7 @@
                 <br/>
                 <!--<div class="text-right">
                     <form action="/filter_hosts_by_ip/" method="post">
+                        {% csrf_token %}
                         <label class="mr-3">Search by IP Range/Subnet ("X.X.X.X - Y.Y.Y.Y" or "X.X.X.X/Y") </label><input name="range" id="ipsearchforedithoststable">
                         <button class="btn-primary btn d-inline-block btn-sm" type="submit">Search</button>
                     </form>
@@ -547,7 +546,7 @@
                 <table id="edithoststable" data-toggle="table" data-search="true"
                        class="table table-bordered table-sm" cellspacing="0" width="100%">
                     <thead>
-                        <th>Status</th>
+                        <!--<th>Status</th>-->
                         <th>Name</th>
                         <th>Address</th>
                         <th>State</th>
@@ -569,11 +568,13 @@
                     <tbody>
                     {% for h in existing_hosts %}
                         <tr id="{{ h.id }}">
-                            {% if h.status == "up" %}
-                            <td><div class="green circle"></div>up</td>
-                            {% else %}
-                            <td><div class="red circle"></div>down</td>
-                            {% endif %}
+                            <!-- take out status, api call takes too long
+                                {% if h.status == "up" %}
+                                <td><div class="green circle"></div>up</td>
+                                {% else %}
+                                <td><div class="red circle"></div>down</td>
+                                {% endif %}
+                            -->
                             <td>{{ h.name }}</td>
                             <td>{{ h.address }}</td>
                             <td>{{ h.state }}</td>
@@ -595,7 +596,7 @@
                     {% endfor %}
                     </tbody>
                     <tfoot>
-                        <th>Status</th>
+                        <!--<th>Status</th>-->
                         <th>Name</th>
                         <th>Address</th>
                         <th>State</th>
